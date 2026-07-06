@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Monitor de Tasas Venezuela</title>
-    <!-- Tailwind CSS para los estilos -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { font-family: 'Inter', system-ui, sans-serif; background-color: #f8fafc; }
@@ -17,7 +16,6 @@
 <body class="text-slate-800 min-h-screen flex flex-col items-center p-4 md:p-8">
 
     <div class="max-w-5xl w-full space-y-8">
-        <!-- Encabezado Principal -->
         <div class="bg-gradient-to-r from-slate-900 to-slate-800 rounded-3xl p-6 md:p-10 shadow-xl text-white flex flex-col md:flex-row justify-between items-center gap-6 relative overflow-hidden">
             <div class="absolute -right-20 -top-20 w-64 h-64 bg-white/5 rounded-full blur-3xl pointer-events-none"></div>
             
@@ -41,10 +39,8 @@
             </div>
         </div>
 
-        <!-- Grid de Tasas -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
             
-            <!-- BCV USD -->
             <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 rate-card relative overflow-hidden">
                 <div class="absolute top-0 right-0 w-2 h-full bg-blue-600"></div>
                 <div class="flex justify-between items-start mb-4">
@@ -60,10 +56,9 @@
                     <span class="text-2xl font-black text-slate-800">Bs.</span>
                     <span class="text-4xl font-black text-slate-900" id="val-bcv">--.--</span>
                 </div>
-                <p class="text-xs text-slate-400 mt-2" id="date-bcv">Actualizando...</p>
+                <p class="text-xs text-slate-400 mt-4" id="date-bcv">Actualizando...</p>
             </div>
 
-            <!-- BCV EUR -->
             <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 rate-card relative overflow-hidden">
                 <div class="absolute top-0 right-0 w-2 h-full bg-indigo-600"></div>
                 <div class="flex justify-between items-start mb-4">
@@ -75,35 +70,39 @@
                         <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.121 14.121L19 19m-7-7l7-7m-7 7l-2.879 2.879M12 12L9.121 9.121m0 5.758a3 3 0 10-4.243-4.243 3 3 0 004.243 4.243z"></path></svg>
                     </div>
                 </div>
-                <div class="flex items-end gap-1">
-                    <span class="text-2xl font-black text-slate-800">Bs.</span>
-                    <span class="text-4xl font-black text-slate-900" id="val-eur">--.--</span>
+                <div class="flex items-end gap-2 flex-wrap">
+                    <div class="flex items-end gap-1">
+                        <span class="text-2xl font-black text-slate-800">Bs.</span>
+                        <span class="text-4xl font-black text-slate-900" id="val-eur">--.--</span>
+                    </div>
+                    <span id="pct-eur" class="text-xs font-bold px-2 py-0.5 rounded-lg hidden"></span>
                 </div>
-                <p class="text-xs text-slate-400 mt-2" id="date-eur">Actualizando...</p>
+                <p class="text-xs text-slate-400 mt-4" id="date-eur">Actualizando...</p>
             </div>
 
-            <!-- Paralelo -->
             <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 rate-card relative overflow-hidden">
                 <div class="absolute top-0 right-0 w-2 h-full bg-emerald-500"></div>
                 <div class="flex justify-between items-start mb-4">
                     <div>
                         <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Promedio</p>
-                        <h2 class="text-lg font-bold text-slate-800">Paralelo</h2>
+                        <h2 class="text-lg font-bold text-slate-800">Binance P2P</h2>
                     </div>
                     <div class="p-2 bg-emerald-50 rounded-lg">
                         <svg class="w-6 h-6 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                     </div>
                 </div>
-                <div class="flex items-end gap-1">
-                    <span class="text-2xl font-black text-slate-800">Bs.</span>
-                    <span class="text-4xl font-black text-slate-900" id="val-paralelo">--.--</span>
+                <div class="flex items-end gap-2 flex-wrap">
+                    <div class="flex items-end gap-1">
+                        <span class="text-2xl font-black text-slate-800">Bs.</span>
+                        <span class="text-4xl font-black text-slate-900" id="val-paralelo">--.--</span>
+                    </div>
+                    <span id="pct-paralelo" class="text-xs font-bold px-2 py-0.5 rounded-lg hidden"></span>
                 </div>
-                <p class="text-xs text-slate-400 mt-2" id="date-paralelo">Actualizando...</p>
+                <p class="text-xs text-slate-400 mt-4" id="date-paralelo">Actualizando...</p>
             </div>
 
         </div>
 
-        <!-- Conversor Cruzado Inteligente -->
         <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 md:p-8">
             <div class="mb-6">
                 <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
@@ -117,7 +116,7 @@
                 
                 <div class="w-full md:w-1/2">
                     <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Monto que tienes</label>
-                    <input type="number" id="calcAmount" value="200" class="w-full text-2xl font-bold bg-white border border-slate-300 rounded-xl px-4 py-3 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all text-slate-800" oninput="runConverter()">
+                    <input type="number" id="calcAmount" value="10" class="w-full text-2xl font-bold bg-white border border-slate-300 rounded-xl px-4 py-3 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all text-slate-800" oninput="runConverter()">
                 </div>
 
                 <div class="w-full md:w-1/2">
@@ -137,20 +136,18 @@
 
             </div>
 
-            <!-- Resultados del conversor generados dinámicamente -->
             <div class="mt-6 grid grid-cols-2 md:grid-cols-3 gap-4" id="resultsContainer">
-                <!-- Se inyectan aquí vía JS -->
-            </div>
+                </div>
 
         </div>
 
         <p class="text-center text-xs text-slate-400 mt-8">
-            Datos proporcionados por <a href="https://ve.dolarapi.com" target="_blank" class="hover:text-blue-500 underline">DolarApi.com</a>. Las tasas son referenciales.
+            Datos proporcionados por <a href="https://ve.dolarapi.com" target="_blank" class="hover:text-blue-500 underline">DolarApi.com</a>. Las tasas son referenciales. Desarrollado por Lorenzo Sanchez.
         </p>
     </div>
 
     <script>
-        // Variables globales para guardar las tasas (sin binance)
+        // Variables globales para guardar las tasas
         let rates = { bcv: 0, eur: 0, paralelo: 0 };
 
         // Formatear números como moneda
@@ -182,7 +179,7 @@
             // Función segura para evitar divisiones entre 0 antes de que cargue la API
             const safeDiv = (num, den) => (den && den > 0) ? num / den : 0;
 
-            // 2. Pre-calculamos todas las posibles salidas basadas en los Bolívares totales (sin binance)
+            // 2. Pre-calculamos todas las posibles salidas basadas en los Bolívares totales
             const conversions = [
                 { id: 'ves', title: 'Equivale en Bolívares', symbol: 'Bs.', value: amountInVes, color: 'slate' },
                 { id: 'bcv', title: 'Equivale a BCV USD', symbol: '$', value: safeDiv(amountInVes, rates.bcv), color: 'blue' },
@@ -190,14 +187,13 @@
                 { id: 'paralelo', title: 'Equivale a Paralelo', symbol: '$', value: safeDiv(amountInVes, rates.paralelo), color: 'emerald' }
             ];
 
-            // 3. Ocultamos la moneda de origen (ej: si seleccionas USD BCV, mostramos las otras 3)
+            // 3. Ocultamos la moneda de origen
             const resultsToShow = conversions.filter(c => c.id !== source);
 
             // 4. Inyectamos los resultados en el HTML
             const container = document.getElementById('resultsContainer');
             container.innerHTML = ''; // Limpiar panel
 
-            // Mapa para garantizar que Tailwind detecte los colores correctamente
             const colorMap = {
                 'slate': { bg: 'bg-slate-50', border: 'border-slate-200', title: 'text-slate-600', val: 'text-slate-900' },
                 'blue': { bg: 'bg-blue-50', border: 'border-blue-100', title: 'text-blue-600', val: 'text-blue-900' },
@@ -207,8 +203,6 @@
 
             resultsToShow.forEach(item => {
                 const colors = colorMap[item.color];
-                
-                // Si la API aun no ha cargado los datos, mostramos '--'
                 const hasRate = item.id === 'ves' || rates[item.id] > 0;
                 const formattedValue = hasRate ? formatMoney(item.value, item.symbol) : '--';
 
@@ -221,6 +215,29 @@
             });
         }
 
+        // Calcular y renderizar porcentajes de diferencia
+        function calculatePercentages() {
+            if (rates.bcv > 0) {
+                // 1. Diferencia BCV USD vs BCV EUR
+                if (rates.eur > 0) {
+                    const diffEur = ((rates.eur - rates.bcv) / rates.bcv) * 100;
+                    const badgeEur = document.getElementById('pct-eur');
+                    badgeEur.innerText = `${diffEur >= 0 ? '+' : ''}${diffEur.toFixed(2)}%`;
+                    badgeEur.className = `text-xs font-bold px-2 py-0.5 rounded-lg inline-block ${diffEur >= 0 ? 'bg-indigo-100 text-indigo-700' : 'bg-red-100 text-red-700'}`;
+                    badgeEur.title = "Diferencia porcentual respecto al Dólar BCV";
+                }
+
+                // 2. Brecha cambiaria: BCV USD vs Paralelo
+                if (rates.paralelo > 0) {
+                    const diffParalelo = ((rates.paralelo - rates.bcv) / rates.bcv) * 100;
+                    const badgeParalelo = document.getElementById('pct-paralelo');
+                    badgeParalelo.innerText = `${diffParalelo >= 0 ? '+' : ''}${diffParalelo.toFixed(2)}%`;
+                    badgeParalelo.className = `text-xs font-bold px-2 py-0.5 rounded-lg inline-block ${diffParalelo >= 0 ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'}`;
+                    badgeParalelo.title = "Brecha cambiaria respecto al Dólar BCV";
+                }
+            }
+        }
+
         // Obtención de datos de las APIs
         async function fetchRates() {
             const icon = document.getElementById('refreshIcon');
@@ -229,6 +246,10 @@
             // UI Loading state
             icon.classList.add('animate-spin');
             statusText.innerHTML = '<span class="w-2 h-2 rounded-full bg-yellow-500 animate-pulse" id="statusDot"></span> Obteniendo datos...';
+
+            // Ocultar porcentajes al actualizar
+            document.getElementById('pct-eur').classList.add('hidden');
+            document.getElementById('pct-paralelo').classList.add('hidden');
 
             // Set skeleton texts
             ['bcv', 'eur', 'paralelo'].forEach(id => {
@@ -278,6 +299,9 @@
                     document.getElementById('date-paralelo').innerText = formatDate(data.fechaActualizacion);
                 }
 
+                // Calcular las brechas/porcentajes
+                calculatePercentages();
+
                 // Status Success
                 statusText.innerHTML = '<span class="w-2 h-2 rounded-full bg-green-500"></span> Conectado y actualizado';
                 setTimeout(() => { statusText.innerHTML = '<span class="w-2 h-2 rounded-full bg-slate-300"></span> En línea'; }, 4000);
@@ -300,7 +324,6 @@
 
         // Ejecutar apenas cargue la página
         window.onload = fetchRates;
-
     </script>
 </body>
 </html>
