@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Monitor de Tasas Venezuela</title>
+    <!-- Tailwind CSS para los estilos -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { font-family: 'Inter', system-ui, sans-serif; background-color: #f8fafc; }
@@ -11,11 +12,18 @@
         @keyframes loading { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
         .rate-card { transition: transform 0.2s, box-shadow 0.2s; }
         .rate-card:hover { transform: translateY(-4px); box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1); }
+        
+        /* Estilos para scrollbar de tareas */
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 20px; }
     </style>
 </head>
 <body class="text-slate-800 min-h-screen flex flex-col items-center p-4 md:p-8">
 
     <div class="max-w-5xl w-full space-y-8">
+        
+        <!-- Encabezado Principal -->
         <div class="bg-gradient-to-r from-slate-900 to-slate-800 rounded-3xl p-6 md:p-10 shadow-xl text-white flex flex-col md:flex-row justify-between items-center gap-6 relative overflow-hidden">
             <div class="absolute -right-20 -top-20 w-64 h-64 bg-white/5 rounded-full blur-3xl pointer-events-none"></div>
             
@@ -39,8 +47,10 @@
             </div>
         </div>
 
+        <!-- Grid de Tasas -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
             
+            <!-- BCV USD -->
             <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 rate-card relative overflow-hidden">
                 <div class="absolute top-0 right-0 w-2 h-full bg-blue-600"></div>
                 <div class="flex justify-between items-start mb-4">
@@ -59,6 +69,7 @@
                 <p class="text-xs text-slate-400 mt-4" id="date-bcv">Actualizando...</p>
             </div>
 
+            <!-- BCV EUR -->
             <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 rate-card relative overflow-hidden">
                 <div class="absolute top-0 right-0 w-2 h-full bg-indigo-600"></div>
                 <div class="flex justify-between items-start mb-4">
@@ -75,11 +86,13 @@
                         <span class="text-2xl font-black text-slate-800">Bs.</span>
                         <span class="text-4xl font-black text-slate-900" id="val-eur">--.--</span>
                     </div>
+                    <!-- Porcentaje de diferencia vs BCV USD -->
                     <span id="pct-eur" class="text-xs font-bold px-2 py-0.5 rounded-lg hidden"></span>
                 </div>
                 <p class="text-xs text-slate-400 mt-4" id="date-eur">Actualizando...</p>
             </div>
 
+            <!-- Paralelo -->
             <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 rate-card relative overflow-hidden">
                 <div class="absolute top-0 right-0 w-2 h-full bg-emerald-500"></div>
                 <div class="flex justify-between items-start mb-4">
@@ -96,6 +109,7 @@
                         <span class="text-2xl font-black text-slate-800">Bs.</span>
                         <span class="text-4xl font-black text-slate-900" id="val-paralelo">--.--</span>
                     </div>
+                    <!-- Porcentaje de brecha vs BCV USD -->
                     <span id="pct-paralelo" class="text-xs font-bold px-2 py-0.5 rounded-lg hidden"></span>
                 </div>
                 <p class="text-xs text-slate-400 mt-4" id="date-paralelo">Actualizando...</p>
@@ -103,72 +117,145 @@
 
         </div>
 
-        <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 md:p-8">
-            <div class="mb-6">
-                <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
-                    <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
-                    Conversor Cruzado (Cross-Rate)
-                </h2>
-                <p class="text-sm text-slate-500">Selecciona en qué moneda/tasa tienes el dinero y mira su equivalente en las demás.</p>
-            </div>
-
-            <div class="flex flex-col md:flex-row gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-100">
-                
-                <div class="w-full md:w-1/2">
-                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Monto que tienes</label>
-                    <input type="number" id="calcAmount" value="10" class="w-full text-2xl font-bold bg-white border border-slate-300 rounded-xl px-4 py-3 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all text-slate-800" oninput="runConverter()">
+        <!-- Fila de 2 Columnas (Conversor y Lista de Tareas) -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            
+            <!-- Columna 1: Conversor Cruzado -->
+            <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 md:p-8 flex flex-col h-full">
+                <div class="mb-6">
+                    <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
+                        <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
+                        Conversor Cruzado
+                    </h2>
+                    <p class="text-sm text-slate-500 mt-1">Ingresa un monto para ver su equivalente al instante.</p>
                 </div>
 
-                <div class="w-full md:w-1/2">
-                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Moneda o Tasa de Origen</label>
-                    <div class="relative">
-                        <select id="calcCurrency" class="w-full appearance-none text-lg font-bold bg-white border border-slate-300 rounded-xl px-4 py-3.5 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 cursor-pointer" onchange="runConverter()">
-                            <option value="ves">Bolívares (VES)</option>
-                            <option value="bcv" selected>Dólares (Tasa BCV)</option>
-                            <option value="eur">Euros (Tasa BCV)</option>
-                            <option value="paralelo">Dólares (Tasa Paralelo)</option>
-                        </select>
-                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-500">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                <div class="flex flex-col gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-100 mb-6">
+                    <div class="w-full">
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Monto que tienes</label>
+                        <input type="number" id="calcAmount" value="10" class="w-full text-2xl font-bold bg-white border border-slate-300 rounded-xl px-4 py-3 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all text-slate-800" oninput="runConverter()">
+                    </div>
+
+                    <div class="w-full">
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Moneda o Tasa de Origen</label>
+                        <div class="relative">
+                            <select id="calcCurrency" class="w-full appearance-none text-lg font-bold bg-white border border-slate-300 rounded-xl px-4 py-3.5 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 cursor-pointer" onchange="runConverter()">
+                                <option value="ves">Bolívares (VES)</option>
+                                <option value="bcv" selected>Dólares (Tasa BCV)</option>
+                                <option value="eur">Euros (Tasa BCV)</option>
+                                <option value="paralelo">Dólares (Tasa Paralelo)</option>
+                            </select>
+                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-500">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                            </div>
                         </div>
                     </div>
                 </div>
 
+                <!-- Resultados del conversor -->
+                <div class="mt-auto grid grid-cols-1 sm:grid-cols-2 gap-4" id="resultsContainer">
+                    <!-- Se inyectan aquí vía JS -->
+                </div>
             </div>
 
-            <div class="mt-6 grid grid-cols-2 md:grid-cols-3 gap-4" id="resultsContainer">
+            <!-- Columna 2: Tareas Diarias -->
+            <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 md:p-8 flex flex-col h-full max-h-[600px]">
+                <div class="mb-5 flex justify-between items-center">
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
+                            <svg class="w-5 h-5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
+                            Bloc de Tareas
+                        </h2>
+                        <p class="text-sm text-slate-500 mt-1">Pendientes: <span id="pendingCount" class="font-bold text-slate-700">0</span></p>
+                    </div>
                 </div>
+
+                <!-- Input para nueva tarea -->
+                <div class="flex gap-2 mb-4">
+                    <input type="text" id="taskInput" placeholder="Añadir nueva tarea..." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-500/20 transition-all text-slate-700 placeholder-slate-400" onkeypress="addTask(event)">
+                    <button onclick="addTask()" class="bg-amber-500 hover:bg-amber-600 text-white rounded-xl px-4 flex items-center justify-center transition-colors shadow-sm">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                    </button>
+                </div>
+
+                <!-- Lista con Scroll -->
+                <div class="overflow-y-auto custom-scrollbar flex-1 pr-2">
+                    <!-- Pendientes -->
+                    <ul id="pendingTasks" class="space-y-2"></ul>
+                    
+                    <!-- Completadas -->
+                    <div id="completedContainer" class="mt-6 hidden">
+                        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Completadas</h3>
+                        <ul id="completedTasks" class="space-y-2"></ul>
+                    </div>
+                </div>
+            </div>
 
         </div>
 
+        <!-- Sección de Historial 30 Días -->
+        <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 md:p-8">
+            <div class="mb-6 flex justify-between items-center flex-wrap gap-4">
+                <div>
+                    <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
+                        <svg class="w-5 h-5 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                        Historial (Últimos 30 días)
+                    </h2>
+                    <p class="text-sm text-slate-500">Registro histórico obtenido directamente de DolarApi.</p>
+                </div>
+                <button onclick="fetchHistory()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2 rounded-xl text-sm font-medium transition flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                    Cargar Historial
+                </button>
+            </div>
+
+            <div class="overflow-x-auto rounded-xl border border-slate-200">
+                <table class="w-full text-left text-sm text-slate-600">
+                    <thead class="bg-slate-50 text-slate-800 font-bold border-b border-slate-200">
+                        <tr>
+                            <th scope="col" class="px-4 py-3">Fecha</th>
+                            <th scope="col" class="px-4 py-3">BCV (USD)</th>
+                            <th scope="col" class="px-4 py-3">BCV (EUR)</th>
+                            <th scope="col" class="px-4 py-3">Paralelo</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historyTableBody" class="divide-y divide-slate-100">
+                        <tr>
+                            <td colspan="4" class="px-4 py-8 text-center text-slate-400">
+                                <span class="animate-pulse">Cargando historial automáticamente...</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
         <p class="text-center text-xs text-slate-400 mt-8">
-            Datos proporcionados por <a href="https://ve.dolarapi.com" target="_blank" class="hover:text-blue-500 underline">DolarApi.com</a>. Desarrollado por Lorenzo Sanchez.
+            Datos proporcionados por <a href="https://ve.dolarapi.com" target="_blank" class="hover:text-blue-500 underline">DolarApi.com</a>. Desarrollado por Lorenzo sanchez.
         </p>
     </div>
 
     <script>
-        // Variables globales para guardar las tasas
+        // ==========================================
+        // 1. LÓGICA DE DIVISAS Y CONVERSOR
+        // ==========================================
         let rates = { bcv: 0, eur: 0, paralelo: 0 };
 
-        // Formatear números como moneda
         const formatMoney = (amount, currency = 'Bs') => {
             if (amount === 0 || isNaN(amount)) return '--';
             return new Intl.NumberFormat('es-VE', { style: 'decimal', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(amount) + ` ${currency}`;
         };
 
-        // Extraer y procesar fechas
         const formatDate = (dateString) => {
             if (!dateString) return 'Actualizado recientemente';
             const date = new Date(dateString);
             return 'Actualizado: ' + date.toLocaleTimeString('es-VE', { hour: '2-digit', minute: '2-digit' }) + ' (' + date.toLocaleDateString('es-VE') + ')';
         };
 
-        // Lógica de conversión cruzada
         function runConverter() {
             const amount = parseFloat(document.getElementById('calcAmount').value) || 0;
             const source = document.getElementById('calcCurrency').value;
 
-            // 1. Llevamos cualquier moneda a nuestra "moneda base" (Bolívares)
             let amountInVes = 0;
             if (source === 'ves') {
                 amountInVes = amount;
@@ -176,10 +263,8 @@
                 amountInVes = amount * rates[source];
             }
 
-            // Función segura para evitar divisiones entre 0 antes de que cargue la API
             const safeDiv = (num, den) => (den && den > 0) ? num / den : 0;
 
-            // 2. Pre-calculamos todas las posibles salidas basadas en los Bolívares totales
             const conversions = [
                 { id: 'ves', title: 'Equivale en Bolívares', symbol: 'Bs.', value: amountInVes, color: 'slate' },
                 { id: 'bcv', title: 'Equivale a BCV USD', symbol: '$', value: safeDiv(amountInVes, rates.bcv), color: 'blue' },
@@ -187,12 +272,9 @@
                 { id: 'paralelo', title: 'Equivale a Paralelo', symbol: '$', value: safeDiv(amountInVes, rates.paralelo), color: 'emerald' }
             ];
 
-            // 3. Ocultamos la moneda de origen
             const resultsToShow = conversions.filter(c => c.id !== source);
-
-            // 4. Inyectamos los resultados en el HTML
             const container = document.getElementById('resultsContainer');
-            container.innerHTML = ''; // Limpiar panel
+            container.innerHTML = '';
 
             const colorMap = {
                 'slate': { bg: 'bg-slate-50', border: 'border-slate-200', title: 'text-slate-600', val: 'text-slate-900' },
@@ -215,64 +297,56 @@
             });
         }
 
-        // Calcular y renderizar porcentajes de diferencia
         function calculatePercentages() {
+            const badgeEur = document.getElementById('pct-eur');
+            const badgeParalelo = document.getElementById('pct-paralelo');
+
             if (rates.bcv > 0) {
-                // 1. Diferencia BCV USD vs BCV EUR
                 if (rates.eur > 0) {
                     const diffEur = ((rates.eur - rates.bcv) / rates.bcv) * 100;
-                    const badgeEur = document.getElementById('pct-eur');
                     badgeEur.innerText = `${diffEur >= 0 ? '+' : ''}${diffEur.toFixed(2)}%`;
                     badgeEur.className = `text-xs font-bold px-2 py-0.5 rounded-lg inline-block ${diffEur >= 0 ? 'bg-indigo-100 text-indigo-700' : 'bg-red-100 text-red-700'}`;
-                    badgeEur.title = "Diferencia porcentual respecto al Dólar BCV";
-                }
+                    badgeEur.classList.remove('hidden');
+                } else { badgeEur.classList.add('hidden'); }
 
-                // 2. Brecha cambiaria: BCV USD vs Paralelo
                 if (rates.paralelo > 0) {
                     const diffParalelo = ((rates.paralelo - rates.bcv) / rates.bcv) * 100;
-                    const badgeParalelo = document.getElementById('pct-paralelo');
                     badgeParalelo.innerText = `${diffParalelo >= 0 ? '+' : ''}${diffParalelo.toFixed(2)}%`;
                     badgeParalelo.className = `text-xs font-bold px-2 py-0.5 rounded-lg inline-block ${diffParalelo >= 0 ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'}`;
-                    badgeParalelo.title = "Brecha cambiaria respecto al Dólar BCV";
-                }
+                    badgeParalelo.classList.remove('hidden');
+                } else { badgeParalelo.classList.add('hidden'); }
+            } else {
+                badgeEur.classList.add('hidden');
+                badgeParalelo.classList.add('hidden');
             }
         }
 
-        // Obtención de datos de las APIs
         async function fetchRates() {
             const icon = document.getElementById('refreshIcon');
             const statusText = document.getElementById('statusText');
             
-            // UI Loading state
             icon.classList.add('animate-spin');
             statusText.innerHTML = '<span class="w-2 h-2 rounded-full bg-yellow-500 animate-pulse" id="statusDot"></span> Obteniendo datos...';
 
-            // Ocultar porcentajes al actualizar
             document.getElementById('pct-eur').classList.add('hidden');
             document.getElementById('pct-paralelo').classList.add('hidden');
 
-            // Set skeleton texts
             ['bcv', 'eur', 'paralelo'].forEach(id => {
                 document.getElementById(`val-${id}`).innerText = '----';
                 document.getElementById(`val-${id}`).classList.add('skeleton', 'text-transparent', 'rounded-md');
             });
 
-            // Inicializar el conversor con estado de "carga"
             runConverter();
 
             try {
-                // Hacemos las peticiones en paralelo a DolarApi
                 const [bcvRes, eurRes, paraleloRes] = await Promise.all([
                     fetch('https://ve.dolarapi.com/v1/dolares/oficial').catch(() => null),
                     fetch('https://ve.dolarapi.com/v1/euros/oficial').catch(() => null),
                     fetch('https://ve.dolarapi.com/v1/dolares/paralelo').catch(() => null)
                 ]);
 
-                const removeSkeleton = (id) => {
-                    document.getElementById(`val-${id}`).classList.remove('skeleton', 'text-transparent', 'rounded-md');
-                };
+                const removeSkeleton = (id) => document.getElementById(`val-${id}`).classList.remove('skeleton', 'text-transparent', 'rounded-md');
 
-                // BCV USD
                 if (bcvRes && bcvRes.ok) {
                     const data = await bcvRes.json();
                     rates.bcv = data.promedio;
@@ -281,7 +355,6 @@
                     document.getElementById('date-bcv').innerText = formatDate(data.fechaActualizacion);
                 }
 
-                // BCV EUR
                 if (eurRes && eurRes.ok) {
                     const data = await eurRes.json();
                     rates.eur = data.promedio;
@@ -290,7 +363,6 @@
                     document.getElementById('date-eur').innerText = formatDate(data.fechaActualizacion);
                 }
 
-                // Paralelo
                 if (paraleloRes && paraleloRes.ok) {
                     const data = await paraleloRes.json();
                     rates.paralelo = data.promedio;
@@ -299,20 +371,15 @@
                     document.getElementById('date-paralelo').innerText = formatDate(data.fechaActualizacion);
                 }
 
-                // Calcular las brechas/porcentajes
                 calculatePercentages();
+                runConverter();
 
-                // Status Success
                 statusText.innerHTML = '<span class="w-2 h-2 rounded-full bg-green-500"></span> Conectado y actualizado';
                 setTimeout(() => { statusText.innerHTML = '<span class="w-2 h-2 rounded-full bg-slate-300"></span> En línea'; }, 4000);
-
-                // Re-ejecutar el conversor ahora que tenemos todas las tasas
-                runConverter();
 
             } catch (error) {
                 console.error("Error al obtener tasas:", error);
                 statusText.innerHTML = '<span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span> Error de conexión';
-                
                 ['bcv', 'eur', 'paralelo'].forEach(id => {
                     document.getElementById(`val-${id}`).classList.remove('skeleton', 'text-transparent', 'rounded-md');
                     if (rates[id] === 0) document.getElementById(`val-${id}`).innerText = 'Error';
@@ -322,8 +389,181 @@
             }
         }
 
-        // Ejecutar apenas cargue la página
-        window.onload = fetchRates;
+        // ==========================================
+        // 2. LÓGICA DEL HISTORIAL 
+        // ==========================================
+        async function fetchHistory() {
+            const tbody = document.getElementById('historyTableBody');
+            tbody.innerHTML = '<tr><td colspan="4" class="px-4 py-8 text-center text-slate-400"><span class="animate-pulse">Conectando con DolarApi...</span></td></tr>';
+            
+            try {
+                // Obtener históricos directamente de la API en paralelo
+                const [histDolares, histEuros] = await Promise.all([
+                    fetch('https://ve.dolarapi.com/v1/historicos/dolares').then(r => r.json()).catch(() => []),
+                    fetch('https://ve.dolarapi.com/v1/historicos/euros').then(r => r.json()).catch(() => [])
+                ]);
+
+                // Separar en arrays según el tipo (Oficial USD, Paralelo USD, Oficial EUR)
+                const arrBcv = Array.isArray(histDolares) ? histDolares.filter(i => i.fuente === 'oficial') : [];
+                const arrParalelo = Array.isArray(histDolares) ? histDolares.filter(i => i.fuente === 'paralelo') : [];
+                const arrEur = Array.isArray(histEuros) ? histEuros.filter(i => i.fuente === 'oficial' || !i.fuente || (i.nombre && i.nombre.toLowerCase().includes('oficial'))) : [];
+
+                // Usamos un objeto para agrupar las 3 tasas bajo la misma fecha
+                const historyMap = {};
+
+                const processArray = (arr, currencyKey) => {
+                    arr.forEach(item => {
+                        const dateVal = item.fecha || item.fechaActualizacion;
+                        if (!dateVal) return;
+                        
+                        const dateStr = dateVal.split('T')[0]; // Extrae YYYY-MM-DD
+                        
+                        if (!historyMap[dateStr]) {
+                            historyMap[dateStr] = { bcv: null, eur: null, paralelo: null };
+                        }
+                        if (item.promedio) {
+                            historyMap[dateStr][currencyKey] = item.promedio;
+                        }
+                    });
+                };
+
+                processArray(arrBcv, 'bcv');
+                processArray(arrEur, 'eur');
+                processArray(arrParalelo, 'paralelo');
+
+                // Convertir a Array, ordenar por fecha (más reciente primero) y tomar los últimos 30
+                const historyArray = Object.keys(historyMap).map(date => {
+                    return { fecha: date, ...historyMap[date] };
+                }).sort((a, b) => b.fecha.localeCompare(a.fecha)).slice(0, 30);
+
+                tbody.innerHTML = ''; 
+                
+                if (historyArray.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="4" class="px-4 py-8 text-center text-slate-400">No hay datos históricos disponibles en la API.</td></tr>';
+                    return;
+                }
+
+                historyArray.forEach(row => {
+                    // Formatear la fecha
+                    const [y, m, d] = row.fecha.split('-');
+                    const dateObj = new Date(y, m - 1, d);
+                    const dateStr = dateObj.toLocaleDateString('es-VE');
+
+                    // Comprobar si existe el dato para evitar imprimir 'undefined' si falta uno ese día
+                    const valBcv = row.bcv ? `Bs. ${row.bcv.toFixed(2)}` : '<span class="text-slate-300">--</span>';
+                    const valEur = row.eur ? `Bs. ${row.eur.toFixed(2)}` : '<span class="text-slate-300">--</span>';
+                    const valParalelo = row.paralelo ? `Bs. ${row.paralelo.toFixed(2)}` : '<span class="text-slate-300">--</span>';
+
+                    const tr = document.createElement('tr');
+                    tr.className = "hover:bg-slate-50 transition-colors";
+                    tr.innerHTML = `
+                        <td class="px-4 py-3 font-medium text-slate-800">${dateStr}</td>
+                        <td class="px-4 py-3 font-bold text-blue-600">${valBcv}</td>
+                        <td class="px-4 py-3 font-bold text-indigo-600">${valEur}</td>
+                        <td class="px-4 py-3 font-bold text-emerald-600">${valParalelo}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+
+            } catch (error) {
+                console.error("Error cargando historial:", error);
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="4" class="px-4 py-8 text-center text-red-500">
+                            Error de conexión. No se pudo cargar el historial desde la API.
+                        </td>
+                    </tr>`;
+            }
+        }
+
+        // ==========================================
+        // 3. LÓGICA DEL BLOC DE TAREAS (Local Storage)
+        // ==========================================
+        let tasks = JSON.parse(localStorage.getItem('monitor_tareas_diarias')) || [];
+
+        function renderTasks() {
+            const pendingList = document.getElementById('pendingTasks');
+            const completedList = document.getElementById('completedTasks');
+            const pendingCount = document.getElementById('pendingCount');
+            
+            pendingList.innerHTML = '';
+            completedList.innerHTML = '';
+            
+            let pCount = 0;
+
+            tasks.forEach(task => {
+                const li = document.createElement('li');
+                li.className = 'flex items-center justify-between p-3 bg-white rounded-xl border border-slate-100 hover:border-slate-300 transition-all group';
+                
+                li.innerHTML = `
+                    <div class="flex items-center gap-3 overflow-hidden cursor-pointer flex-1" onclick="toggleTask(${task.id})">
+                        <button class="w-5 h-5 rounded border ${task.completed ? 'bg-amber-500 border-amber-500' : 'border-slate-300 bg-white'} flex items-center justify-center flex-shrink-0 transition-colors">
+                            ${task.completed ? '<svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>' : ''}
+                        </button>
+                        <span class="text-sm truncate select-none ${task.completed ? 'line-through text-slate-400' : 'text-slate-700 font-medium'}">${task.text}</span>
+                    </div>
+                    <button onclick="deleteTask(${task.id})" class="text-slate-300 hover:text-red-500 transition-colors p-1.5 opacity-0 group-hover:opacity-100 focus:opacity-100 ml-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                    </button>
+                `;
+
+                if (task.completed) {
+                    completedList.appendChild(li);
+                } else {
+                    pendingList.appendChild(li);
+                    pCount++;
+                }
+            });
+
+            // Actualizar contador y visibilidad
+            pendingCount.innerText = pCount;
+            const completedCount = tasks.filter(t => t.completed).length;
+            document.getElementById('completedContainer').classList.toggle('hidden', completedCount === 0);
+            
+            // Mostrar mensaje si está vacío
+            if (tasks.length === 0) {
+                pendingList.innerHTML = `<li class="text-center text-sm text-slate-400 py-4 italic">No hay tareas pendientes. ¡Añade una!</li>`;
+            }
+        }
+
+        function addTask(e) {
+            // Si se pasa un evento (teclado), verificar que sea Enter
+            if (e && e.type === 'keypress' && e.key !== 'Enter') return;
+            
+            const input = document.getElementById('taskInput');
+            const text = input.value.trim();
+            
+            if (text) {
+                tasks.push({ id: Date.now(), text: text, completed: false });
+                localStorage.setItem('monitor_tareas_diarias', JSON.stringify(tasks));
+                input.value = '';
+                renderTasks();
+            }
+        }
+
+        function toggleTask(id) {
+            const task = tasks.find(t => t.id === id);
+            if (task) {
+                task.completed = !task.completed;
+                localStorage.setItem('monitor_tareas_diarias', JSON.stringify(tasks));
+                renderTasks();
+            }
+        }
+
+        function deleteTask(id) {
+            tasks = tasks.filter(t => t.id !== id);
+            localStorage.setItem('monitor_tareas_diarias', JSON.stringify(tasks));
+            renderTasks();
+        }
+
+        // ==========================================
+        // 4. INICIALIZACIÓN
+        // ==========================================
+        window.onload = function() {
+            fetchRates();
+            fetchHistory();
+            renderTasks();
+        };
     </script>
 </body>
 </html>
