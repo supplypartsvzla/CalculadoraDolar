@@ -11,18 +11,19 @@
         @keyframes loading { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
         .rate-card { transition: transform 0.2s, box-shadow 0.2s; }
         .rate-card:hover { transform: translateY(-4px); box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1); }
-        /* Custom Scrollbar for history table & tasks */
+        /* Scroll personalizado para notas e historial */
         .custom-scroll::-webkit-scrollbar { width: 6px; }
         .custom-scroll::-webkit-scrollbar-track { background: transparent; }
-        .custom-scroll::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 10px; }
+        .custom-scroll::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 20px; }
     </style>
 </head>
 <body class="text-slate-800 min-h-screen flex flex-col items-center p-4 md:p-8">
 
-    <!-- Se amplió max-w-5xl a max-w-7xl para acomodar las dos columnas -->
-    <div class="max-w-7xl w-full space-y-6">
+    <div class="max-w-6xl w-full space-y-6">
         
-        <!-- Encabezado Principal -->
+        <!-- ==========================================
+             1. ENCABEZADO Y SELECTOR HOY/MAÑANA
+             ========================================== -->
         <div class="bg-gradient-to-r from-slate-900 to-slate-800 rounded-3xl p-6 md:p-10 shadow-xl text-white flex flex-col md:flex-row justify-between items-center gap-6 relative overflow-hidden">
             <div class="absolute -right-20 -top-20 w-64 h-64 bg-white/5 rounded-full blur-3xl pointer-events-none"></div>
             
@@ -46,7 +47,6 @@
             </div>
         </div>
 
-        <!-- Selector Hoy / Mañana -->
         <div class="flex justify-center w-full my-4">
             <div class="bg-white border border-slate-200 p-1.5 rounded-2xl flex space-x-1 shadow-sm w-full max-w-md relative">
                 <button id="btn-hoy" onclick="setMode('hoy')" class="flex-1 px-4 py-2.5 text-sm font-bold rounded-xl transition-all bg-slate-900 text-white shadow-sm">
@@ -62,9 +62,10 @@
             </div>
         </div>
 
-        <!-- Grid de Tasas -->
+        <!-- ==========================================
+             2. TARJETAS DE INDICADORES
+             ========================================== -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-            
             <!-- BCV USD -->
             <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 rate-card relative overflow-hidden">
                 <div class="absolute top-0 right-0 w-2 h-full bg-blue-600"></div>
@@ -93,7 +94,10 @@
                         <h2 class="text-lg font-bold text-slate-800">Euro (EUR)</h2>
                     </div>
                     <div class="p-2 bg-indigo-50 rounded-lg">
-                        <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.25 7.756a4.5 4.5 0 100 8.488M7.5 10.5h5.25m-5.25 3h5.25M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <!-- Ícono real del Euro -->
+                        <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 8h-2.5C9.015 8 7 10.015 7 12s2.015 4 4.5 4H14M7 10h5M7 14h5"></path>
+                        </svg>
                     </div>
                 </div>
                 <div class="flex items-end gap-2 flex-wrap">
@@ -127,191 +131,216 @@
                 </div>
                 <p class="text-xs text-slate-400 mt-4" id="date-paralelo">Actualizando...</p>
             </div>
-
         </div>
 
-        <!-- Layout Inferior Reordenado (Móvil: Conversor -> Notas -> Historial | Desktop: 2 Columnas) -->
-        <div class="flex flex-col lg:grid lg:grid-cols-12 gap-6">
+        <!-- ==========================================
+             3. CUERPO PRINCIPAL (Conversor, Notas, Historial)
+             Orden: 
+             - Móvil: 1. Conversor, 2. Notas, 3. Historial
+             - PC: Izquierda (Conversor + Historial), Derecha (Notas)
+             ========================================== -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             
-            <!-- 1. Conversor Cruzado Inteligente -->
-            <div class="order-1 lg:col-span-7 xl:col-span-8">
-                <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 md:p-8 h-full">
-                    <div class="mb-6">
-                        <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
-                            <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
-                            Conversor Cruzado (Cross-Rate)
-                        </h2>
-                        <p class="text-sm text-slate-500">Selecciona en qué moneda tienes el dinero y mira su equivalente.</p>
+            <!-- CONTENEDOR IZQUIERDO (Conversor e Historial) -->
+            <!-- En móvil es order-1 (conversor) y order-3 (historial via CSS o separándolo). 
+                 Para lograr el orden exacto en HTML, los colocamos como items de la grilla -->
+            
+            <!-- 3.1 Conversor Cruzado -->
+            <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 md:p-8 lg:col-span-2 order-1">
+                <div class="mb-6">
+                    <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
+                        <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
+                        Conversor Cruzado (Cross-Rate)
+                    </h2>
+                    <p class="text-sm text-slate-500">Selecciona en qué moneda/tasa tienes el dinero y mira su equivalente en las demás.</p>
+                </div>
+
+                <div class="flex flex-col md:flex-row gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                    <div class="w-full md:w-1/2">
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Monto que tienes</label>
+                        <input type="number" id="calcAmount" value="10" class="w-full text-2xl font-bold bg-white border border-slate-300 rounded-xl px-4 py-3 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all text-slate-800" oninput="runConverter()">
                     </div>
 
-                    <div class="flex flex-col md:flex-row gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-100">
-                        <div class="w-full md:w-1/2">
-                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Monto que tienes</label>
-                            <input type="number" id="calcAmount" value="10" class="w-full text-2xl font-bold bg-white border border-slate-300 rounded-xl px-4 py-3 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all text-slate-800" oninput="runConverter()">
-                        </div>
-                        <div class="w-full md:w-1/2">
-                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Moneda de Origen</label>
-                            <div class="relative">
-                                <select id="calcCurrency" class="w-full appearance-none text-lg font-bold bg-white border border-slate-300 rounded-xl px-4 py-3.5 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 cursor-pointer" onchange="runConverter()">
-                                    <option value="ves">Bolívares (VES)</option>
-                                    <option value="bcv" selected>Dólares (Tasa BCV)</option>
-                                    <option value="eur">Euros (Tasa BCV)</option>
-                                    <option value="paralelo">Dólares (Paralelo)</option>
-                                </select>
-                                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-500">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                                </div>
+                    <div class="w-full md:w-1/2">
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Moneda o Tasa de Origen</label>
+                        <div class="relative">
+                            <select id="calcCurrency" class="w-full appearance-none text-lg font-bold bg-white border border-slate-300 rounded-xl px-4 py-3.5 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 cursor-pointer" onchange="runConverter()">
+                                <option value="ves">Bolívares (VES)</option>
+                                <option value="bcv" selected>Dólares (Tasa BCV)</option>
+                                <option value="eur">Euros (Tasa BCV)</option>
+                                <option value="paralelo">Dólares (Tasa Paralelo)</option>
+                            </select>
+                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-500">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                             </div>
                         </div>
                     </div>
+                </div>
 
-                    <div class="mt-6 grid grid-cols-2 md:grid-cols-3 gap-4" id="resultsContainer">
-                        <!-- Resultados inyectados por JS -->
-                    </div>
+                <div class="mt-6 grid grid-cols-2 md:grid-cols-3 gap-4" id="resultsContainer">
+                    <!-- Se inyectan aquí vía JS -->
                 </div>
             </div>
 
-            <!-- 2. Bloc de Notas / Recordatorios (En móvil va de segundo, en desktop a la derecha) -->
-            <div class="order-2 lg:col-span-5 xl:col-span-4 lg:row-span-2">
-                <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 md:p-8 h-full flex flex-col lg:max-h-[850px]">
-                    <div class="mb-4">
+            <!-- 3.2 Bloc de Notas (Recordatorios) -->
+            <!-- order-2 en móvil, se va a la columna derecha en desktop ocupando todo el alto -->
+            <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 flex flex-col h-[500px] lg:h-auto lg:row-span-2 lg:col-span-1 order-2">
+                <div class="mb-4">
+                    <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
+                        <svg class="w-5 h-5 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                        Bloc de Recordatorios
+                    </h2>
+                    <p class="text-xs text-slate-500 mt-1">Notas locales independientes.</p>
+                </div>
+
+                <!-- Input Nueva Tarea con Selector de Prioridad -->
+                <div class="flex gap-2 mb-4">
+                    <select id="taskPriority" class="bg-slate-50 border border-slate-200 rounded-xl px-2 py-2 outline-none focus:border-blue-500 cursor-pointer text-base" title="Prioridad">
+                        <option value="yellow" title="Normal">🟡</option>
+                        <option value="orange" title="Importante">🟠</option>
+                        <option value="red" title="Urgente">🔴</option>
+                    </select>
+                    <input type="text" id="taskInput" placeholder="Añadir nota..." class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all text-slate-800" onkeypress="if(event.key === 'Enter') addTask()">
+                    <button onclick="addTask()" class="bg-slate-900 hover:bg-slate-800 text-white rounded-xl px-3 font-bold transition-colors">
+                        +
+                    </button>
+                </div>
+
+                <!-- Lista Scrollable de Tareas -->
+                <div class="flex-1 overflow-y-auto custom-scroll pr-2 space-y-2 min-h-0" id="taskList">
+                    <!-- Las tareas se renderizan aquí -->
+                </div>
+            </div>
+
+            <!-- 3.3 Tabla de Historial API -->
+            <!-- order-3 en móvil, se queda en la columna izquierda abajo del conversor en desktop -->
+            <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 md:p-8 lg:col-span-2 order-3">
+                <div class="mb-6 flex justify-between items-end">
+                    <div>
                         <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
-                            <svg class="w-5 h-5 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
-                            Bloc de Recordatorios
+                            <svg class="w-5 h-5 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                            Historial (Últimos 30 días)
                         </h2>
-                        <p class="text-xs text-slate-500 mt-1">Notas guardadas localmente en este dispositivo.</p>
-                    </div>
-
-                    <!-- Input Nueva Tarea -->
-                    <div class="flex gap-2 mb-6">
-                        <input type="text" id="taskInput" placeholder="Añadir pendiente (Ej. Revisar cuenta)..." class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all text-slate-800" onkeypress="if(event.key === 'Enter') addTask()">
-                        <button onclick="addTask()" class="bg-slate-900 hover:bg-slate-800 text-white rounded-xl px-4 font-bold transition-colors">
-                            +
-                        </button>
-                    </div>
-
-                    <!-- Lista de Tareas Scrollable -->
-                    <div class="flex-1 overflow-y-auto custom-scroll pr-2 space-y-3 min-h-[250px]" id="taskList">
-                        <!-- Las tareas se inyectan aquí -->
+                        <p class="text-sm text-slate-500">Registro oficial extraído automáticamente de la API.</p>
                     </div>
                 </div>
-            </div>
 
-            <!-- 3. Tabla de Historial (En móvil va de último, en desktop abajo a la izquierda) -->
-            <div class="order-3 lg:col-span-7 xl:col-span-8">
-                <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 md:p-8 h-full">
-                    <div class="mb-4 flex items-center gap-2">
-                        <svg class="w-5 h-5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
-                        <h2 class="text-xl font-bold text-slate-800">Historial BCV (Últimos 30 días)</h2>
-                    </div>
-                    <div class="overflow-x-auto rounded-xl border border-slate-200">
-                        <table class="w-full text-left border-collapse min-w-[400px]">
-                            <thead>
-                                <tr class="bg-slate-50 border-b border-slate-200">
-                                    <th class="py-3 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Fecha Valor</th>
-                                    <th class="py-3 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Dólar (USD)</th>
-                                    <th class="py-3 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Euro (EUR)</th>
-                                </tr>
-                            </thead>
-                            <tbody id="historyBody">
-                                <!-- Se inyecta vía JS -->
-                                <tr>
-                                    <td colspan="3" class="py-4 text-center text-sm text-slate-400 skeleton text-transparent">Cargando datos históricos...</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                <div class="overflow-x-auto rounded-xl border border-slate-200">
+                    <table class="w-full text-sm text-left">
+                        <thead class="text-xs text-slate-500 uppercase bg-slate-50">
+                            <tr>
+                                <th class="px-4 py-3">Fecha</th>
+                                <th class="px-4 py-3">BCV (USD)</th>
+                                <th class="px-4 py-3">BCV (EUR)</th>
+                                <th class="px-4 py-3">Paralelo</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historyTableBody" class="divide-y divide-slate-100">
+                            <!-- El historial se inyectará aquí -->
+                            <tr><td colspan="4" class="px-4 py-8 text-center text-slate-400">Cargando historial...</td></tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
 
         </div>
 
-        <p class="text-center text-xs text-slate-400 mt-8">
-            Datos proporcionados por <a href="https://ve.dolarapi.com" target="_blank" class="hover:text-blue-500 underline">DolarApi</a> y <a href="https://pydolarvenezuela-api.vercel.app/" target="_blank" class="hover:text-blue-500 underline">PyDolarVenezuela</a>. Desarrollado por Lorenzo Sanchez.
+        <p class="text-center text-xs text-slate-400 mt-8 pb-4">
+            Datos proporcionados por <a href="https://ve.dolarapi.com" target="_blank" class="hover:text-blue-500 underline">DolarApi</a> y <a href="https://pydolarvenezuela-api.vercel.app/" target="_blank" class="hover:text-blue-500 underline">PyDolarVenezuela</a>.<br>Desarrollado por Lorenzo Sanchez.
         </p>
     </div>
 
+    <!-- ==========================================
+         4. LÓGICA JAVASCRIPT
+         ========================================== -->
     <script>
-        /* ==========================================
-           1. ESTADO Y CONFIGURACIÓN GLOBAL
-           ========================================== */
+        /* --- ESTADO GLOBAL Y VARIABLES --- */
         let appState = {
-            mode: 'hoy', // 'hoy' o 'manana'
+            mode: 'hoy', 
             hoy: { bcv: 0, eur: 0, dateBcv: '', dateEur: '' },
             manana: { bcv: 0, eur: 0, dateBcv: '', dateEur: '', available: false },
-            paralelo: { val: 0, date: '' }
+            paralelo: { val: 0, date: '' },
+            historyData: [] 
         };
 
         let rates = { bcv: 0, eur: 0, paralelo: 0 };
-
-        /* ==========================================
-           2. SISTEMA DE TAREAS (BLOC DE NOTAS)
-           ========================================== */
         let tasks = JSON.parse(localStorage.getItem('bcv_tasks')) || [];
 
-        function renderTasks() {
-            const list = document.getElementById('taskList');
-            list.innerHTML = '';
-            
-            if (tasks.length === 0) {
-                list.innerHTML = '<p class="text-sm text-slate-400 text-center py-8">Todo al día. No hay pendientes.</p>';
-                return;
-            }
+        /* --- UTILIDADES DE TEXTO Y FECHA --- */
+        const formatMoney = (amount, currency = 'Bs') => {
+            if (amount === 0 || isNaN(amount)) return '--';
+            return new Intl.NumberFormat('es-VE', { style: 'decimal', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(amount) + ` ${currency}`;
+        };
 
-            tasks.forEach((task, index) => {
-                const checked = task.completed ? 'checked' : '';
-                const textStyle = task.completed ? 'line-through text-slate-400' : 'text-slate-700 font-medium';
-                const bgStyle = task.completed ? 'bg-slate-50/50 opacity-60' : 'bg-white';
-                
-                list.innerHTML += `
-                    <div class="flex items-center justify-between p-3 ${bgStyle} rounded-xl border border-slate-200 group transition-all">
-                        <label class="flex items-center gap-3 cursor-pointer flex-1">
-                            <input type="checkbox" ${checked} onchange="toggleTask(${index})" class="w-5 h-5 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer">
-                            <span class="${textStyle} text-sm select-none break-all">${task.text}</span>
-                        </label>
-                        <button onclick="deleteTask(${index})" title="Eliminar" class="text-slate-300 hover:text-red-500 transition px-2 opacity-0 group-hover:opacity-100">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                        </button>
-                    </div>
-                `;
+        const formatDate = (dateString, isParalelo = false) => {
+            if (dateString === 'N/D') return 'Tasa no anunciada aún';
+            if (!dateString) return 'Actualizando...';
+            // Solo extraemos la fecha limpia en modo texto YYYY-MM-DD
+            const pureDate = dateString.split('T')[0];
+            const [y, m, d] = pureDate.split('-');
+            const prefix = isParalelo ? 'Último reporte: ' : 'Fecha Valor: ';
+            return `${prefix}${d}/${m}/${y}`;
+        };
+
+        /* --- MOTOR DE FECHAS (HOY VS MAÑANA) --- */
+        // Extrae el string YYYY-MM-DD de una fecha UTC
+        const extractDateString = (isoString) => {
+            if (!isoString) return "";
+            return isoString.split('T')[0];
+        };
+
+        // Algoritmo robusto para limpiar, ordenar y definir el modo "Día Siguiente"
+        const cleanAndSortDates = (historyArray) => {
+            // 1. Obtener la fecha local actual en Venezuela (YYYY-MM-DD)
+            const formatter = new Intl.DateTimeFormat('en-US', { timeZone: 'America/Caracas', year: 'numeric', month: '2-digit', day: '2-digit' });
+            const parts = formatter.formatToParts(new Date());
+            const p = {};
+            parts.forEach(part => p[part.type] = part.value);
+            const todayStr = `${p.year}-${p.month}-${p.day}`;
+
+            // 2. Limpiar la data: eliminar promedios inválidos y mapear las fechas correctamente
+            let validData = historyArray.filter(item => item && item.promedio > 0 && (item.fechaActualizacion || item.fecha)).map(item => ({
+                val: item.promedio,
+                fullDate: item.fechaActualizacion || item.fecha,
+                dateStr: extractDateString(item.fechaActualizacion || item.fecha)
+            }));
+
+            // 3. Ordenar cronológicamente (del más nuevo al más viejo) ignorando las horas
+            validData.sort((a, b) => {
+                if (a.dateStr > b.dateStr) return -1;
+                if (a.dateStr < b.dateStr) return 1;
+                return 0;
             });
-        }
 
-        function addTask() {
-            const input = document.getElementById('taskInput');
-            const text = input.value.trim();
-            if (text !== '') {
-                tasks.unshift({ text: text, completed: false }); // Insertar al principio
-                localStorage.setItem('bcv_tasks', JSON.stringify(tasks));
-                input.value = '';
-                renderTasks();
+            // 4. Determinar Hoy y Mañana cruzando con el calendario real
+            let manana = { val: 0, date: '' };
+            let hoy = { val: 0, date: '' };
+            let foundManana = false;
+            let foundHoy = false;
+
+            for (let item of validData) {
+                if (item.dateStr > todayStr && !foundManana) {
+                    manana = { val: item.val, date: item.fullDate };
+                    foundManana = true;
+                } else if (item.dateStr <= todayStr && !foundHoy) {
+                    hoy = { val: item.val, date: item.fullDate };
+                    foundHoy = true;
+                }
+                if (foundManana && foundHoy) break;
             }
-        }
 
-        function toggleTask(index) {
-            tasks[index].completed = !tasks[index].completed;
-            // Si se completó, la movemos al final. Si se desmarcó, la movemos al principio.
-            const task = tasks.splice(index, 1)[0];
-            if (task.completed) {
-                tasks.push(task);
-            } else {
-                tasks.unshift(task);
+            // Si por alguna razón de la API falla el día de hoy, clonamos la última tasa conocida
+            if (!foundHoy && validData.length > 0) {
+                hoy = { val: validData[0].val, date: validData[0].fullDate };
             }
-            localStorage.setItem('bcv_tasks', JSON.stringify(tasks));
-            renderTasks();
-        }
 
-        function deleteTask(index) {
-            tasks.splice(index, 1);
-            localStorage.setItem('bcv_tasks', JSON.stringify(tasks));
-            renderTasks();
-        }
+            return { hoy, manana, hasManana: foundManana };
+        };
 
-        /* ==========================================
-           3. UI Y FORMATOS DE TASAS
-           ========================================== */
+        /* --- CONTROL DE INTERFAZ Y MODOS --- */
         function setMode(newMode) {
             appState.mode = newMode;
+            
             if (newMode === 'hoy') {
                 document.getElementById('btn-hoy').className = "flex-1 px-4 py-2.5 text-sm font-bold rounded-xl transition-all bg-slate-900 text-white shadow-sm";
                 document.getElementById('btn-manana').className = "flex-1 px-4 py-2.5 text-sm font-bold rounded-xl transition-all text-slate-500 hover:text-slate-800 relative";
@@ -322,34 +351,13 @@
             renderUI();
         }
 
-        const formatDate = (dateString, isParalelo = false) => {
-            if (dateString === 'N/D') return 'Tasa no anunciada aún';
-            if (!dateString) return 'Actualizado recientemente';
-            
-            // Forzar interpretación correcta (separando partes) sin afectar timezone local
-            const parts = dateString.split('T')[0].split('-');
-            if(parts.length !== 3) return dateString;
-            
-            const [y, m, d] = parts;
-            const formattedDate = `${d}/${m}/${y}`;
-            const prefix = isParalelo ? 'Último reporte: ' : 'Fecha Valor: ';
-            
-            // Opcional: Extraer hora original si viene en el ISO
-            let timeStr = '';
-            if(dateString.includes('T')) {
-                const dateObj = new Date(dateString);
-                timeStr = ` (${dateObj.toLocaleTimeString('es-VE', { hour: '2-digit', minute: '2-digit' })})`;
-            }
-
-            return prefix + formattedDate + timeStr;
-        };
-
         function renderUI() {
             const mode = appState.mode;
             const currentData = appState[mode];
             const isManana = mode === 'manana';
             const mananaAvail = appState.manana.available;
 
+            // Actualizar tasas activas para el conversor
             if (isManana && !mananaAvail) {
                 rates.bcv = 0;
                 rates.eur = 0;
@@ -359,7 +367,7 @@
             }
             rates.paralelo = appState.paralelo.val;
 
-            // Render Tarjetas
+            // Renderizar Tarjetas
             if (isManana && !mananaAvail) {
                 document.getElementById('val-bcv').innerText = 'N/D';
                 document.getElementById('date-bcv').innerText = formatDate('N/D');
@@ -373,9 +381,10 @@
             }
 
             document.getElementById('val-paralelo').innerText = appState.paralelo.val > 0 ? appState.paralelo.val.toFixed(2) : '--.--';
-            const extraParaleloNote = isManana ? " (Tasa actual)" : "";
+            const extraParaleloNote = isManana ? " (Tasa de Hoy)" : "";
             document.getElementById('date-paralelo').innerText = formatDate(appState.paralelo.date, true) + extraParaleloNote;
 
+            // Insignia verde de mañana
             const badge = document.getElementById('badge-manana');
             if (appState.manana.available) {
                 badge.classList.remove('hidden');
@@ -387,11 +396,31 @@
             runConverter();
         }
 
-        const formatMoney = (amount, currency = 'Bs') => {
-            if (amount === 0 || isNaN(amount)) return '--';
-            return new Intl.NumberFormat('es-VE', { style: 'decimal', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(amount) + ` ${currency}`;
-        };
+        function calculatePercentages() {
+            const badgeEur = document.getElementById('pct-eur');
+            const badgeParalelo = document.getElementById('pct-paralelo');
 
+            if (rates.bcv > 0) {
+                if (rates.eur > 0) {
+                    const diffEur = ((rates.eur - rates.bcv) / rates.bcv) * 100;
+                    badgeEur.innerText = `${diffEur >= 0 ? '+' : ''}${diffEur.toFixed(2)}%`;
+                    badgeEur.className = `text-xs font-bold px-2 py-0.5 rounded-lg inline-block ${diffEur >= 0 ? 'bg-indigo-100 text-indigo-700' : 'bg-red-100 text-red-700'}`;
+                    badgeEur.classList.remove('hidden');
+                } else { badgeEur.classList.add('hidden'); }
+
+                if (rates.paralelo > 0) {
+                    const diffParalelo = ((rates.paralelo - rates.bcv) / rates.bcv) * 100;
+                    badgeParalelo.innerText = `${diffParalelo >= 0 ? '+' : ''}${diffParalelo.toFixed(2)}%`;
+                    badgeParalelo.className = `text-xs font-bold px-2 py-0.5 rounded-lg inline-block ${diffParalelo >= 0 ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'}`;
+                    badgeParalelo.classList.remove('hidden');
+                } else { badgeParalelo.classList.add('hidden'); }
+            } else {
+                badgeEur.classList.add('hidden');
+                badgeParalelo.classList.add('hidden');
+            }
+        }
+
+        /* --- CONVERSOR CRUZADO --- */
         function runConverter() {
             const amount = parseFloat(document.getElementById('calcAmount').value) || 0;
             const source = document.getElementById('calcCurrency').value;
@@ -429,189 +458,155 @@
                 const formattedValue = hasRate ? formatMoney(item.value, item.symbol) : '--';
 
                 container.innerHTML += `
-                    <div class="${colors.bg} border ${colors.border} rounded-xl p-3 md:p-4 text-center">
-                        <div class="text-[10px] md:text-xs ${colors.title} font-bold mb-1 line-clamp-1">${item.title}</div>
-                        <div class="text-base md:text-lg font-black ${colors.val}">${formattedValue}</div>
+                    <div class="${colors.bg} border ${colors.border} rounded-xl p-4 text-center">
+                        <div class="text-xs ${colors.title} font-bold mb-1">${item.title}</div>
+                        <div class="text-lg font-black ${colors.val}">${formattedValue}</div>
                     </div>
                 `;
             });
         }
 
-        function calculatePercentages() {
-            const badgeEur = document.getElementById('pct-eur');
-            const badgeParalelo = document.getElementById('pct-paralelo');
-
-            if (rates.bcv > 0) {
-                if (rates.eur > 0) {
-                    const diffEur = ((rates.eur - rates.bcv) / rates.bcv) * 100;
-                    badgeEur.innerText = `${diffEur >= 0 ? '+' : ''}${diffEur.toFixed(2)}%`;
-                    badgeEur.className = `text-xs font-bold px-2 py-0.5 rounded-lg inline-block ${diffEur >= 0 ? 'bg-indigo-100 text-indigo-700' : 'bg-red-100 text-red-700'}`;
-                    badgeEur.classList.remove('hidden');
-                } else { badgeEur.classList.add('hidden'); }
-
-                if (rates.paralelo > 0) {
-                    const diffParalelo = ((rates.paralelo - rates.bcv) / rates.bcv) * 100;
-                    badgeParalelo.innerText = `${diffParalelo >= 0 ? '+' : ''}${diffParalelo.toFixed(2)}%`;
-                    badgeParalelo.className = `text-xs font-bold px-2 py-0.5 rounded-lg inline-block ${diffParalelo >= 0 ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'}`;
-                    badgeParalelo.classList.remove('hidden');
-                } else { badgeParalelo.classList.add('hidden'); }
-            } else {
-                badgeEur.classList.add('hidden');
-                badgeParalelo.classList.add('hidden');
-            }
-        }
-
-        // Renderizar Historial de 30 días uniendo BCV y EUR
-        function renderHistory(cleanBcv, cleanEur) {
-            const tbody = document.getElementById('historyBody');
+        /* --- HISTORIAL (TABLA) --- */
+        function renderHistoryTable() {
+            const tbody = document.getElementById('historyTableBody');
             tbody.innerHTML = '';
-            
-            // Agrupar tasas por día exacto
-            const historyMap = {};
-            cleanBcv.forEach(item => { historyMap[item.dateStr] = { bcv: item.val, eur: 0 }; });
-            cleanEur.forEach(item => {
-                if(!historyMap[item.dateStr]) historyMap[item.dateStr] = { bcv: 0, eur: 0 };
-                historyMap[item.dateStr].eur = item.val;
-            });
 
-            // Ordenar fechas descendente
-            const sortedDates = Object.keys(historyMap).sort((a, b) => b.localeCompare(a));
-            const top30 = sortedDates.slice(0, 30); // Limitar a 30 días
-
-            if(top30.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="3" class="py-4 text-center text-sm text-slate-400">No hay datos históricos disponibles.</td></tr>';
+            if (appState.historyData.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" class="px-4 py-8 text-center text-slate-400">No hay datos históricos disponibles.</td></tr>`;
                 return;
             }
 
-            top30.forEach(date => {
-                const data = historyMap[date];
-                const [y, m, d] = date.split('-');
-                const formattedDate = `${d}/${m}/${y}`;
-                const bcvStr = data.bcv > 0 ? `Bs. ${data.bcv.toFixed(2)}` : '--';
-                const eurStr = data.eur > 0 ? `Bs. ${data.eur.toFixed(2)}` : '--';
+            // Mostrar los últimos 30 días
+            const rows = appState.historyData.slice(0, 30);
+            
+            rows.forEach(row => {
+                const bcvStr = row.bcv > 0 ? row.bcv.toFixed(2) : '-';
+                const eurStr = row.eur > 0 ? row.eur.toFixed(2) : '-';
+                const paralStr = row.paralelo > 0 ? row.paralelo.toFixed(2) : '-';
 
                 tbody.innerHTML += `
-                    <tr class="border-b border-slate-100 hover:bg-slate-50 transition">
-                        <td class="py-3 px-4 text-sm font-medium text-slate-700 whitespace-nowrap">${formattedDate}</td>
-                        <td class="py-3 px-4 text-sm font-bold text-blue-700">${bcvStr}</td>
-                        <td class="py-3 px-4 text-sm font-bold text-indigo-700">${eurStr}</td>
+                    <tr class="hover:bg-slate-50 transition-colors">
+                        <td class="px-4 py-3 font-medium text-slate-800">${row.date}</td>
+                        <td class="px-4 py-3 text-slate-600">Bs. ${bcvStr}</td>
+                        <td class="px-4 py-3 text-slate-600">Bs. ${eurStr}</td>
+                        <td class="px-4 py-3 text-slate-600">Bs. ${paralStr}</td>
                     </tr>
                 `;
             });
         }
 
-        /* ==========================================
-           4. ALGORITMO CEREBRO Y CONEXIÓN A APIS
-           ========================================== */
-        
+        /* --- FETCHING & CEREBRO CENTRAL --- */
         async function fetchRates() {
             const icon = document.getElementById('refreshIcon');
             const statusText = document.getElementById('statusText');
             
             icon.classList.add('animate-spin');
-            statusText.innerHTML = '<span class="w-2 h-2 rounded-full bg-yellow-500 animate-pulse" id="statusDot"></span> Buscando...';
+            statusText.innerHTML = '<span class="w-2 h-2 rounded-full bg-yellow-500 animate-pulse" id="statusDot"></span> Conectando...';
 
+            // Limpiar UI visualmente
             document.getElementById('pct-eur').classList.add('hidden');
             document.getElementById('pct-paralelo').classList.add('hidden');
-
             ['bcv', 'eur', 'paralelo'].forEach(id => {
                 document.getElementById(`val-${id}`).innerText = '----';
                 document.getElementById(`val-${id}`).classList.add('skeleton', 'text-transparent', 'rounded-md');
             });
 
             try {
-                // Descargar todo (Actuales + Historiales combinados)
-                const [paraleloRes, bcvLatest, eurLatest, histBcv, histEur] = await Promise.all([
-                    fetch('https://ve.dolarapi.com/v1/dolares/paralelo').then(r => r.json()).catch(() => null),
-                    fetch('https://ve.dolarapi.com/v1/dolares/oficial').then(r => r.json()).catch(() => null),
-                    fetch('https://ve.dolarapi.com/v1/euros/oficial').then(r => r.json()).catch(() => null),
-                    fetch('https://ve.dolarapi.com/v1/historicos/dolares').then(r => r.json()).catch(() => []),
-                    fetch('https://ve.dolarapi.com/v1/historicos/euros').then(r => r.json()).catch(() => [])
+                // Consultas Paralelas a DolarApi y PyDolarVenezuela
+                const reqParalelo = fetch('https://ve.dolarapi.com/v1/dolares/paralelo').then(r => r.json()).catch(() => null);
+                const reqHistBcv = fetch('https://ve.dolarapi.com/v1/historicos/dolares').then(r => r.json()).catch(() => []);
+                const reqHistEur = fetch('https://ve.dolarapi.com/v1/historicos/euros').then(r => r.json()).catch(() => []);
+                const reqPyDolar = fetch('https://pydolarvenezuela-api.vercel.app/api/v1/dollar/bcv').then(r => r.json()).catch(() => null);
+
+                const [paraleloRes, histBcv, histEur, pyDolarRes] = await Promise.all([
+                    reqParalelo, reqHistBcv, reqHistEur, reqPyDolar
                 ]);
 
-                if (paraleloRes && paraleloRes.promedio) {
+                // 1. Tasa Paralela
+                if (paraleloRes) {
                     appState.paralelo = { val: paraleloRes.promedio, date: paraleloRes.fechaActualizacion || paraleloRes.fecha };
                 }
 
-                // Juntar Data
-                let arrBcv = [];
-                if (bcvLatest) arrBcv.push(bcvLatest);
-                if (Array.isArray(histBcv)) arrBcv.push(...histBcv.filter(i => i.fuente === 'oficial' || (i.nombre && i.nombre.toUpperCase().includes('BCV'))));
+                // 2. Unificar Históricos (DolarApi)
+                let arrBcv = Array.isArray(histBcv) ? histBcv.filter(i => i.fuente === 'oficial') : [];
+                let arrEur = Array.isArray(histEur) ? histEur.filter(i => i.fuente === 'oficial' || (i.nombre && i.nombre.toLowerCase().includes('oficial'))) : [];
 
-                let arrEur = [];
-                if (eurLatest) arrEur.push(eurLatest);
-                if (Array.isArray(histEur)) arrEur.push(...histEur.filter(i => i.fuente === 'oficial' || (i.nombre && i.nombre.toUpperCase().includes('OFICIAL')) || !i.fuente));
-
-                // Algoritmo Cortador de Fechas Puras (Ignora Zonas Horarias)
-                const cleanAndSort = (arr) => {
-                    const unique = [];
-                    const seen = new Set();
-                    for (let item of arr) {
-                        const val = parseFloat(item.promedio);
-                        if (isNaN(val) || val <= 0) continue;
-                        
-                        const d = item.fechaActualizacion || item.fecha;
-                        if (!d) continue;
-                        
-                        const dateStr = d.split('T')[0]; // Extrae solo YYYY-MM-DD
-                        if (!seen.has(dateStr)) {
-                            seen.add(dateStr);
-                            unique.push({ val: val, date: d, dateStr: dateStr });
-                        }
-                    }
-                    // Orden descendente matemático de fechas
-                    unique.sort((a, b) => b.dateStr.localeCompare(a.dateStr));
-                    return unique;
-                };
-
-                const cleanBcv = cleanAndSort(arrBcv);
-                const cleanEur = cleanAndSort(arrEur);
-
-                // Renderizar la Tabla Histórica con la data procesada
-                renderHistory(cleanBcv, cleanEur);
-
-                // FECHA LOCAL ESTRICTA (Caracas)
-                const today = new Date();
-                const formatter = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Caracas', year: 'numeric', month: '2-digit', day: '2-digit' });
-                const todayStr = formatter.format(today);
-
-                // Asignador Inteligente (Hoy vs Mañana)
-                const getRates = (cleanArr) => {
-                    let manana = { val: 0, date: '', available: false };
-                    let hoy = { val: 0, date: '' };
+                // 3. Inyectar datos en vivo de PyDolarVenezuela para mayor precisión
+                if (pyDolarRes) {
+                    const monitors = pyDolarRes.monitors || pyDolarRes;
+                    const usdObj = monitors.usd || monitors.dolar || monitors.USD || {};
+                    const eurObj = monitors.eur || monitors.euro || monitors.EUR || {};
                     
-                    if (cleanArr.length === 0) return { hoy, manana };
-
-                    // ¿La fecha de la API es matemáticamente MAYOR a la fecha de hoy? -> Es Mañana.
-                    if (cleanArr[0].dateStr > todayStr) {
-                        manana = { val: cleanArr[0].val, date: cleanArr[0].date, available: true };
-                        // Respaldamos 'Hoy' con el siguiente dato en la lista si existe, sino clonamos.
-                        hoy = cleanArr.length > 1 ? { val: cleanArr[1].val, date: cleanArr[1].date } : { val: cleanArr[0].val, date: cleanArr[0].date };
-                    } else {
-                        hoy = { val: cleanArr[0].val, date: cleanArr[0].date };
+                    const usdPrice = usdObj.price || usdObj.value || (typeof usdObj === 'number' ? usdObj : 0);
+                    const eurPrice = eurObj.price || eurObj.value || (typeof eurObj === 'number' ? eurObj : 0);
+                    
+                    let rawDate = (pyDolarRes.datetime && pyDolarRes.datetime.date) || usdObj.last_update || '';
+                    let isoDate = new Date().toISOString(); 
+                    
+                    const dateMatch = rawDate.match(/(\d{1,2})[-/](\d{1,2})[-/](\d{4})/);
+                    if (dateMatch) {
+                        isoDate = `${dateMatch[3]}-${dateMatch[2].padStart(2, '0')}-${dateMatch[1].padStart(2, '0')}T15:00:00Z`;
                     }
-                    return { hoy, manana };
+
+                    if (usdPrice > 0) arrBcv.push({ promedio: usdPrice, fechaActualizacion: isoDate, fuente: 'oficial' });
+                    if (eurPrice > 0) arrEur.push({ promedio: eurPrice, fechaActualizacion: isoDate, fuente: 'oficial' });
+                }
+
+                // 4. Extraer "Hoy" y "Mañana" inteligentemente
+                const extBcv = cleanAndSortDates(arrBcv);
+                const extEur = cleanAndSortDates(arrEur);
+
+                appState.hoy.bcv = extBcv.hoy.val;
+                appState.hoy.dateBcv = extBcv.hoy.date;
+                appState.hoy.eur = extEur.hoy.val;
+                appState.hoy.dateEur = extEur.hoy.date;
+
+                appState.manana.available = extBcv.hasManana;
+                if (extBcv.hasManana) {
+                    appState.manana.bcv = extBcv.manana.val;
+                    appState.manana.dateBcv = extBcv.manana.date;
+                }
+                if (extEur.hasManana) {
+                    appState.manana.eur = extEur.manana.val;
+                    appState.manana.dateEur = extEur.manana.date;
+                }
+
+                // 5. Construir Tabla Histórica agrupando por fecha (YYYY-MM-DD)
+                const historyMap = {};
+                
+                // Función para añadir datos al mapa
+                const addToMap = (arr, key) => {
+                    arr.forEach(item => {
+                        const dStr = extractDateString(item.fechaActualizacion || item.fecha);
+                        if (!dStr) return;
+                        if (!historyMap[dStr]) historyMap[dStr] = { dateStr: dStr, bcv: 0, eur: 0, paralelo: 0 };
+                        if (item.promedio > 0 && historyMap[dStr][key] === 0) {
+                            historyMap[dStr][key] = item.promedio;
+                        }
+                    });
                 };
 
-                const bcvData = getRates(cleanBcv);
-                const eurData = getRates(cleanEur);
-
-                appState.hoy.bcv = bcvData.hoy.val;
-                appState.hoy.dateBcv = bcvData.hoy.date;
-                appState.hoy.eur = eurData.hoy.val;
-                appState.hoy.dateEur = eurData.hoy.date;
-
-                appState.manana.available = bcvData.manana.available || eurData.manana.available;
+                addToMap(arrBcv, 'bcv');
+                addToMap(arrEur, 'eur');
                 
-                if (bcvData.manana.available) {
-                    appState.manana.bcv = bcvData.manana.val;
-                    appState.manana.dateBcv = bcvData.manana.date;
-                }
-                if (eurData.manana.available) {
-                    appState.manana.eur = eurData.manana.val;
-                    appState.manana.dateEur = eurData.manana.date;
+                // Añadimos también el histórico del paralelo si lo tenemos (DolarApi)
+                const reqHistParalelo = await fetch('https://ve.dolarapi.com/v1/historicos/dolares').then(r=>r.json()).catch(()=>[]);
+                if (Array.isArray(reqHistParalelo)) {
+                     addToMap(reqHistParalelo.filter(i => i.fuente !== 'oficial'), 'paralelo');
                 }
 
+                // Convertir mapa a array, formatear fecha local y ordenar
+                appState.historyData = Object.values(historyMap)
+                    .filter(r => r.bcv > 0)
+                    .sort((a, b) => a.dateStr < b.dateStr ? 1 : -1)
+                    .map(r => {
+                        const [y, m, d] = r.dateStr.split('-');
+                        return { ...r, date: `${d}/${m}/${y}` };
+                    });
+
+                renderHistoryTable();
+
+                // 6. Finalizar UI
                 ['bcv', 'eur', 'paralelo'].forEach(id => {
                     document.getElementById(`val-${id}`).classList.remove('skeleton', 'text-transparent', 'rounded-md');
                 });
@@ -627,14 +622,84 @@
                 
                 ['bcv', 'eur', 'paralelo'].forEach(id => {
                     document.getElementById(`val-${id}`).classList.remove('skeleton', 'text-transparent', 'rounded-md');
-                    document.getElementById(`val-${id}`).innerText = '--.--';
+                    document.getElementById(`val-${id}`).innerText = 'Error';
                 });
             } finally {
                 icon.classList.remove('animate-spin');
             }
         }
 
-        // Inicializar
+        /* --- BLOC DE NOTAS (LOCALSTORAGE) --- */
+        function renderTasks() {
+            const list = document.getElementById('taskList');
+            list.innerHTML = '';
+            
+            if (tasks.length === 0) {
+                list.innerHTML = '<p class="text-sm text-slate-400 text-center py-8">Todo al día. No hay pendientes.</p>';
+                return;
+            }
+
+            tasks.forEach((task, index) => {
+                const checked = task.completed ? 'checked' : '';
+                const textStyle = task.completed ? 'line-through text-slate-400' : 'text-slate-700 font-medium';
+                
+                // Color por prioridad
+                const priority = task.priority || 'yellow';
+                let borderColors = 'border-slate-200';
+                let leftBorder = '';
+
+                if (!task.completed) {
+                    leftBorder = 'border-l-4 ';
+                    if (priority === 'yellow') borderColors = 'border-slate-200 border-l-yellow-400';
+                    if (priority === 'orange') borderColors = 'border-slate-200 border-l-orange-500';
+                    if (priority === 'red') borderColors = 'border-slate-200 border-l-red-500';
+                } else {
+                    borderColors = 'border-slate-200';
+                }
+
+                const bgStyle = task.completed ? 'bg-slate-50/50 opacity-60' : 'bg-white';
+                
+                list.innerHTML += `
+                    <div class="flex items-center justify-between p-3 ${bgStyle} rounded-xl border ${borderColors} ${leftBorder} group transition-all">
+                        <label class="flex items-center gap-3 cursor-pointer flex-1">
+                            <input type="checkbox" ${checked} onchange="toggleTask(${index})" class="w-5 h-5 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer">
+                            <span class="${textStyle} text-sm select-none break-words flex-1 pr-2">${task.text}</span>
+                        </label>
+                        <button onclick="deleteTask(${index})" title="Eliminar" class="text-slate-300 hover:text-red-500 transition px-2 opacity-0 group-hover:opacity-100 focus:opacity-100">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                        </button>
+                    </div>
+                `;
+            });
+        }
+
+        function addTask() {
+            const input = document.getElementById('taskInput');
+            const prioritySelect = document.getElementById('taskPriority');
+            const text = input.value.trim();
+            const priorityValue = prioritySelect.value;
+
+            if (text !== '') {
+                tasks.unshift({ text: text, completed: false, priority: priorityValue });
+                localStorage.setItem('bcv_tasks', JSON.stringify(tasks));
+                input.value = '';
+                renderTasks();
+            }
+        }
+
+        function toggleTask(index) {
+            tasks[index].completed = !tasks[index].completed;
+            localStorage.setItem('bcv_tasks', JSON.stringify(tasks));
+            renderTasks();
+        }
+
+        function deleteTask(index) {
+            tasks.splice(index, 1);
+            localStorage.setItem('bcv_tasks', JSON.stringify(tasks));
+            renderTasks();
+        }
+
+        // Ejecutar apenas cargue la página
         window.onload = () => {
             renderTasks();
             fetchRates();
