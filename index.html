@@ -11,11 +11,16 @@
         @keyframes loading { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
         .rate-card { transition: transform 0.2s, box-shadow 0.2s; }
         .rate-card:hover { transform: translateY(-4px); box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1); }
+        /* Custom Scrollbar for history table & tasks */
+        .custom-scroll::-webkit-scrollbar { width: 6px; }
+        .custom-scroll::-webkit-scrollbar-track { background: transparent; }
+        .custom-scroll::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 10px; }
     </style>
 </head>
 <body class="text-slate-800 min-h-screen flex flex-col items-center p-4 md:p-8">
 
-    <div class="max-w-5xl w-full space-y-6">
+    <!-- Se amplió max-w-5xl a max-w-7xl para acomodar las dos columnas -->
+    <div class="max-w-7xl w-full space-y-6">
         
         <!-- Encabezado Principal -->
         <div class="bg-gradient-to-r from-slate-900 to-slate-800 rounded-3xl p-6 md:p-10 shadow-xl text-white flex flex-col md:flex-row justify-between items-center gap-6 relative overflow-hidden">
@@ -125,54 +130,112 @@
 
         </div>
 
-        <!-- Conversor Cruzado Inteligente -->
-        <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 md:p-8">
-            <div class="mb-6">
-                <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
-                    <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
-                    Conversor Cruzado (Cross-Rate)
-                </h2>
-                <p class="text-sm text-slate-500">Selecciona en qué moneda/tasa tienes el dinero y mira su equivalente en las demás.</p>
-            </div>
-
-            <div class="flex flex-col md:flex-row gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-100">
+        <!-- Layout Inferior de 2 Columnas -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            
+            <!-- Columna Izquierda: Conversor y Tabla de Historial -->
+            <div class="lg:col-span-7 xl:col-span-8 space-y-6">
                 
-                <div class="w-full md:w-1/2">
-                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Monto que tienes</label>
-                    <input type="number" id="calcAmount" value="10" class="w-full text-2xl font-bold bg-white border border-slate-300 rounded-xl px-4 py-3 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all text-slate-800" oninput="runConverter()">
+                <!-- Conversor Cruzado Inteligente -->
+                <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 md:p-8 h-fit">
+                    <div class="mb-6">
+                        <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
+                            <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
+                            Conversor Cruzado (Cross-Rate)
+                        </h2>
+                        <p class="text-sm text-slate-500">Selecciona en qué moneda tienes el dinero y mira su equivalente.</p>
+                    </div>
+
+                    <div class="flex flex-col md:flex-row gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                        <div class="w-full md:w-1/2">
+                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Monto que tienes</label>
+                            <input type="number" id="calcAmount" value="10" class="w-full text-2xl font-bold bg-white border border-slate-300 rounded-xl px-4 py-3 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all text-slate-800" oninput="runConverter()">
+                        </div>
+                        <div class="w-full md:w-1/2">
+                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Moneda de Origen</label>
+                            <div class="relative">
+                                <select id="calcCurrency" class="w-full appearance-none text-lg font-bold bg-white border border-slate-300 rounded-xl px-4 py-3.5 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 cursor-pointer" onchange="runConverter()">
+                                    <option value="ves">Bolívares (VES)</option>
+                                    <option value="bcv" selected>Dólares (Tasa BCV)</option>
+                                    <option value="eur">Euros (Tasa BCV)</option>
+                                    <option value="paralelo">Dólares (Paralelo)</option>
+                                </select>
+                                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-500">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 grid grid-cols-2 md:grid-cols-3 gap-4" id="resultsContainer">
+                        <!-- Resultados inyectados por JS -->
+                    </div>
                 </div>
 
-                <div class="w-full md:w-1/2">
-                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Moneda o Tasa de Origen</label>
-                    <div class="relative">
-                        <select id="calcCurrency" class="w-full appearance-none text-lg font-bold bg-white border border-slate-300 rounded-xl px-4 py-3.5 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 cursor-pointer" onchange="runConverter()">
-                            <option value="ves">Bolívares (VES)</option>
-                            <option value="bcv" selected>Dólares (Tasa BCV)</option>
-                            <option value="eur">Euros (Tasa BCV)</option>
-                            <option value="paralelo">Dólares (Tasa Paralelo)</option>
-                        </select>
-                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-500">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                        </div>
+                <!-- Tabla de Historial (30 días) -->
+                <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 md:p-8">
+                    <div class="mb-4 flex items-center gap-2">
+                        <svg class="w-5 h-5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                        <h2 class="text-xl font-bold text-slate-800">Historial BCV (Últimos 30 días)</h2>
+                    </div>
+                    <div class="overflow-x-auto rounded-xl border border-slate-200">
+                        <table class="w-full text-left border-collapse min-w-[400px]">
+                            <thead>
+                                <tr class="bg-slate-50 border-b border-slate-200">
+                                    <th class="py-3 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Fecha Valor</th>
+                                    <th class="py-3 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Dólar (USD)</th>
+                                    <th class="py-3 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Euro (EUR)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="historyBody">
+                                <!-- Se inyecta vía JS -->
+                                <tr>
+                                    <td colspan="3" class="py-4 text-center text-sm text-slate-400 skeleton text-transparent">Cargando datos históricos...</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
 
             </div>
 
-            <!-- Resultados del conversor -->
-            <div class="mt-6 grid grid-cols-2 md:grid-cols-3 gap-4" id="resultsContainer">
-                <!-- Se inyectan aquí vía JS -->
+            <!-- Columna Derecha: Bloc de Notas / Recordatorios -->
+            <div class="lg:col-span-5 xl:col-span-4">
+                <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 md:p-8 h-full flex flex-col max-h-[850px]">
+                    <div class="mb-4">
+                        <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
+                            <svg class="w-5 h-5 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                            Bloc de Recordatorios
+                        </h2>
+                        <p class="text-xs text-slate-500 mt-1">Notas guardadas localmente en este dispositivo.</p>
+                    </div>
+
+                    <!-- Input Nueva Tarea -->
+                    <div class="flex gap-2 mb-6">
+                        <input type="text" id="taskInput" placeholder="Añadir pendiente (Ej. Revisar cuenta)..." class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all text-slate-800" onkeypress="if(event.key === 'Enter') addTask()">
+                        <button onclick="addTask()" class="bg-slate-900 hover:bg-slate-800 text-white rounded-xl px-4 font-bold transition-colors">
+                            +
+                        </button>
+                    </div>
+
+                    <!-- Lista de Tareas Scrollable -->
+                    <div class="flex-1 overflow-y-auto custom-scroll pr-2 space-y-3" id="taskList">
+                        <!-- Las tareas se inyectan aquí -->
+                    </div>
+                </div>
             </div>
 
         </div>
 
         <p class="text-center text-xs text-slate-400 mt-8">
-            Datos proporcionados por <a href="https://ve.dolarapi.com" target="_blank" class="hover:text-blue-500 underline">DolarApi.com</a>. Desarrollado por Lorenzo Sanchez.
+            Datos proporcionados por <a href="https://ve.dolarapi.com" target="_blank" class="hover:text-blue-500 underline">DolarApi</a> y <a href="https://pydolarvenezuela-api.vercel.app/" target="_blank" class="hover:text-blue-500 underline">PyDolarVenezuela</a>.
         </p>
     </div>
 
     <script>
-        // Estado Global de la App
+        /* ==========================================
+           1. ESTADO Y CONFIGURACIÓN GLOBAL
+           ========================================== */
         let appState = {
             mode: 'hoy', // 'hoy' o 'manana'
             hoy: { bcv: 0, eur: 0, dateBcv: '', dateEur: '' },
@@ -182,10 +245,74 @@
 
         let rates = { bcv: 0, eur: 0, paralelo: 0 };
 
-        // Cambiar entre la vista de Tasa de Hoy y Tasa de Mañana
+        /* ==========================================
+           2. SISTEMA DE TAREAS (BLOC DE NOTAS)
+           ========================================== */
+        let tasks = JSON.parse(localStorage.getItem('bcv_tasks')) || [];
+
+        function renderTasks() {
+            const list = document.getElementById('taskList');
+            list.innerHTML = '';
+            
+            if (tasks.length === 0) {
+                list.innerHTML = '<p class="text-sm text-slate-400 text-center py-8">Todo al día. No hay pendientes.</p>';
+                return;
+            }
+
+            tasks.forEach((task, index) => {
+                const checked = task.completed ? 'checked' : '';
+                const textStyle = task.completed ? 'line-through text-slate-400' : 'text-slate-700 font-medium';
+                const bgStyle = task.completed ? 'bg-slate-50/50 opacity-60' : 'bg-white';
+                
+                list.innerHTML += `
+                    <div class="flex items-center justify-between p-3 ${bgStyle} rounded-xl border border-slate-200 group transition-all">
+                        <label class="flex items-center gap-3 cursor-pointer flex-1">
+                            <input type="checkbox" ${checked} onchange="toggleTask(${index})" class="w-5 h-5 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer">
+                            <span class="${textStyle} text-sm select-none break-all">${task.text}</span>
+                        </label>
+                        <button onclick="deleteTask(${index})" title="Eliminar" class="text-slate-300 hover:text-red-500 transition px-2 opacity-0 group-hover:opacity-100">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                        </button>
+                    </div>
+                `;
+            });
+        }
+
+        function addTask() {
+            const input = document.getElementById('taskInput');
+            const text = input.value.trim();
+            if (text !== '') {
+                tasks.unshift({ text: text, completed: false }); // Insertar al principio
+                localStorage.setItem('bcv_tasks', JSON.stringify(tasks));
+                input.value = '';
+                renderTasks();
+            }
+        }
+
+        function toggleTask(index) {
+            tasks[index].completed = !tasks[index].completed;
+            // Si se completó, la movemos al final. Si se desmarcó, la movemos al principio.
+            const task = tasks.splice(index, 1)[0];
+            if (task.completed) {
+                tasks.push(task);
+            } else {
+                tasks.unshift(task);
+            }
+            localStorage.setItem('bcv_tasks', JSON.stringify(tasks));
+            renderTasks();
+        }
+
+        function deleteTask(index) {
+            tasks.splice(index, 1);
+            localStorage.setItem('bcv_tasks', JSON.stringify(tasks));
+            renderTasks();
+        }
+
+        /* ==========================================
+           3. UI Y FORMATOS DE TASAS
+           ========================================== */
         function setMode(newMode) {
             appState.mode = newMode;
-            
             if (newMode === 'hoy') {
                 document.getElementById('btn-hoy').className = "flex-1 px-4 py-2.5 text-sm font-bold rounded-xl transition-all bg-slate-900 text-white shadow-sm";
                 document.getElementById('btn-manana').className = "flex-1 px-4 py-2.5 text-sm font-bold rounded-xl transition-all text-slate-500 hover:text-slate-800 relative";
@@ -193,25 +320,29 @@
                 document.getElementById('btn-manana').className = "flex-1 px-4 py-2.5 text-sm font-bold rounded-xl transition-all bg-slate-900 text-white shadow-sm relative";
                 document.getElementById('btn-hoy').className = "flex-1 px-4 py-2.5 text-sm font-bold rounded-xl transition-all text-slate-500 hover:text-slate-800";
             }
-            
             renderUI();
         }
 
         const formatDate = (dateString, isParalelo = false) => {
-            if (!dateString || dateString === 'N/D') return 'Tasa no anunciada aún';
+            if (dateString === 'N/D') return 'Tasa no anunciada aún';
+            if (!dateString) return 'Actualizado recientemente';
             
-            const date = new Date(dateString);
-            let timeStr = date.toLocaleTimeString('es-VE', { hour: '2-digit', minute: '2-digit' });
+            // Forzar interpretación correcta (separando partes) sin afectar timezone local
+            const parts = dateString.split('T')[0].split('-');
+            if(parts.length !== 3) return dateString;
             
-            // CORRECCIÓN DE FECHA: Evitar que el UTC salte al día anterior
-            const dateParts = dateString.split('T')[0].split('-');
-            const year = dateParts[0];
-            const month = parseInt(dateParts[1], 10);
-            const day = parseInt(dateParts[2], 10);
-            const dateFormatted = `${day}/${month}/${year}`;
-
+            const [y, m, d] = parts;
+            const formattedDate = `${d}/${m}/${y}`;
             const prefix = isParalelo ? 'Último reporte: ' : 'Fecha Valor: ';
-            return prefix + dateFormatted + ' (' + timeStr + ')';
+            
+            // Opcional: Extraer hora original si viene en el ISO
+            let timeStr = '';
+            if(dateString.includes('T')) {
+                const dateObj = new Date(dateString);
+                timeStr = ` (${dateObj.toLocaleTimeString('es-VE', { hour: '2-digit', minute: '2-digit' })})`;
+            }
+
+            return prefix + formattedDate + timeStr;
         };
 
         function renderUI() {
@@ -229,7 +360,7 @@
             }
             rates.paralelo = appState.paralelo.val;
 
-            // Renderizar Tarjetas
+            // Render Tarjetas
             if (isManana && !mananaAvail) {
                 document.getElementById('val-bcv').innerText = 'N/D';
                 document.getElementById('date-bcv').innerText = formatDate('N/D');
@@ -243,8 +374,6 @@
             }
 
             document.getElementById('val-paralelo').innerText = appState.paralelo.val > 0 ? appState.paralelo.val.toFixed(2) : '--.--';
-            
-            // Agrega "(Tasa actual)" si está en la pestaña de mañana para no crear confusión
             const extraParaleloNote = isManana ? " (Tasa actual)" : "";
             document.getElementById('date-paralelo').innerText = formatDate(appState.paralelo.date, true) + extraParaleloNote;
 
@@ -298,12 +427,12 @@
             resultsToShow.forEach(item => {
                 const colors = colorMap[item.color];
                 const hasRate = item.id === 'ves' || (rates[item.id] && rates[item.id] > 0);
-                const formattedValue = hasRate ? formatMoney(item.value, item.symbol) : '--.--';
+                const formattedValue = hasRate ? formatMoney(item.value, item.symbol) : '--';
 
                 container.innerHTML += `
-                    <div class="${colors.bg} border ${colors.border} rounded-xl p-4 text-center">
-                        <div class="text-xs ${colors.title} font-bold mb-1">${item.title}</div>
-                        <div class="text-lg font-black ${colors.val}">${formattedValue}</div>
+                    <div class="${colors.bg} border ${colors.border} rounded-xl p-3 md:p-4 text-center">
+                        <div class="text-[10px] md:text-xs ${colors.title} font-bold mb-1 line-clamp-1">${item.title}</div>
+                        <div class="text-base md:text-lg font-black ${colors.val}">${formattedValue}</div>
                     </div>
                 `;
             });
@@ -333,7 +462,49 @@
             }
         }
 
-        // Obtención de datos unificada
+        // Renderizar Historial de 30 días uniendo BCV y EUR
+        function renderHistory(cleanBcv, cleanEur) {
+            const tbody = document.getElementById('historyBody');
+            tbody.innerHTML = '';
+            
+            // Agrupar tasas por día exacto
+            const historyMap = {};
+            cleanBcv.forEach(item => { historyMap[item.dateStr] = { bcv: item.val, eur: 0 }; });
+            cleanEur.forEach(item => {
+                if(!historyMap[item.dateStr]) historyMap[item.dateStr] = { bcv: 0, eur: 0 };
+                historyMap[item.dateStr].eur = item.val;
+            });
+
+            // Ordenar fechas descendente
+            const sortedDates = Object.keys(historyMap).sort((a, b) => b.localeCompare(a));
+            const top30 = sortedDates.slice(0, 30); // Limitar a 30 días
+
+            if(top30.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="3" class="py-4 text-center text-sm text-slate-400">No hay datos históricos disponibles.</td></tr>';
+                return;
+            }
+
+            top30.forEach(date => {
+                const data = historyMap[date];
+                const [y, m, d] = date.split('-');
+                const formattedDate = `${d}/${m}/${y}`;
+                const bcvStr = data.bcv > 0 ? `Bs. ${data.bcv.toFixed(2)}` : '--';
+                const eurStr = data.eur > 0 ? `Bs. ${data.eur.toFixed(2)}` : '--';
+
+                tbody.innerHTML += `
+                    <tr class="border-b border-slate-100 hover:bg-slate-50 transition">
+                        <td class="py-3 px-4 text-sm font-medium text-slate-700 whitespace-nowrap">${formattedDate}</td>
+                        <td class="py-3 px-4 text-sm font-bold text-blue-700">${bcvStr}</td>
+                        <td class="py-3 px-4 text-sm font-bold text-indigo-700">${eurStr}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        /* ==========================================
+           4. ALGORITMO CEREBRO Y CONEXIÓN A APIS
+           ========================================== */
+        
         async function fetchRates() {
             const icon = document.getElementById('refreshIcon');
             const statusText = document.getElementById('statusText');
@@ -349,10 +520,8 @@
                 document.getElementById(`val-${id}`).classList.add('skeleton', 'text-transparent', 'rounded-md');
             });
 
-            runConverter();
-
             try {
-                // Descargar todo en paralelo (actuales e históricos)
+                // Descargar todo (Actuales + Historiales combinados)
                 const [paraleloRes, bcvLatest, eurLatest, histBcv, histEur] = await Promise.all([
                     fetch('https://ve.dolarapi.com/v1/dolares/paralelo').then(r => r.json()).catch(() => null),
                     fetch('https://ve.dolarapi.com/v1/dolares/oficial').then(r => r.json()).catch(() => null),
@@ -365,37 +534,33 @@
                     appState.paralelo = { val: paraleloRes.promedio, date: paraleloRes.fechaActualizacion || paraleloRes.fecha };
                 }
 
-                // Juntar las tasas más recientes con el historial para garantizar que no falte data
+                // Juntar Data
                 let arrBcv = [];
                 if (bcvLatest) arrBcv.push(bcvLatest);
-                if (Array.isArray(histBcv)) {
-                    arrBcv.push(...histBcv.filter(i => i.fuente === 'oficial' || (i.nombre && i.nombre.toUpperCase().includes('BCV'))));
-                }
+                if (Array.isArray(histBcv)) arrBcv.push(...histBcv.filter(i => i.fuente === 'oficial' || (i.nombre && i.nombre.toUpperCase().includes('BCV'))));
 
                 let arrEur = [];
                 if (eurLatest) arrEur.push(eurLatest);
-                if (Array.isArray(histEur)) {
-                    arrEur.push(...histEur.filter(i => i.fuente === 'oficial' || (i.nombre && i.nombre.toUpperCase().includes('OFICIAL')) || !i.fuente));
-                }
+                if (Array.isArray(histEur)) arrEur.push(...histEur.filter(i => i.fuente === 'oficial' || (i.nombre && i.nombre.toUpperCase().includes('OFICIAL')) || !i.fuente));
 
-                // Algoritmo Anti-Errores: Filtra los duplicados de fecha, valores en 0 y ordena de más nuevo a más viejo
+                // Algoritmo Cortador de Fechas Puras (Ignora Zonas Horarias)
                 const cleanAndSort = (arr) => {
                     const unique = [];
                     const seen = new Set();
                     for (let item of arr) {
                         const val = parseFloat(item.promedio);
-                        if (isNaN(val) || val <= 0) continue; // Evita tasas rotas o en cero
+                        if (isNaN(val) || val <= 0) continue;
                         
                         const d = item.fechaActualizacion || item.fecha;
                         if (!d) continue;
                         
-                        const dateStr = d.split('T')[0];
+                        const dateStr = d.split('T')[0]; // Extrae solo YYYY-MM-DD
                         if (!seen.has(dateStr)) {
                             seen.add(dateStr);
                             unique.push({ val: val, date: d, dateStr: dateStr });
                         }
                     }
-                    // Ordena descendentemente: el índice 0 será SIEMPRE el más reciente
+                    // Orden descendente matemático de fechas
                     unique.sort((a, b) => b.dateStr.localeCompare(a.dateStr));
                     return unique;
                 };
@@ -403,25 +568,27 @@
                 const cleanBcv = cleanAndSort(arrBcv);
                 const cleanEur = cleanAndSort(arrEur);
 
-                // Obtener fecha local de Venezuela en YYYY-MM-DD
+                // Renderizar la Tabla Histórica con la data procesada
+                renderHistory(cleanBcv, cleanEur);
+
+                // FECHA LOCAL ESTRICTA (Caracas)
                 const today = new Date();
                 const formatter = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Caracas', year: 'numeric', month: '2-digit', day: '2-digit' });
                 const todayStr = formatter.format(today);
 
-                // Asignador inteligente de "Hoy" y "Mañana"
+                // Asignador Inteligente (Hoy vs Mañana)
                 const getRates = (cleanArr) => {
                     let manana = { val: 0, date: '', available: false };
                     let hoy = { val: 0, date: '' };
                     
                     if (cleanArr.length === 0) return { hoy, manana };
 
-                    // Si el primer elemento (el más nuevo) tiene una fecha MAYOR a hoy, va para "Mañana"
+                    // ¿La fecha de la API es matemáticamente MAYOR a la fecha de hoy? -> Es Mañana.
                     if (cleanArr[0].dateStr > todayStr) {
                         manana = { val: cleanArr[0].val, date: cleanArr[0].date, available: true };
-                        // La de "Hoy" entonces será el elemento anterior. Si no existe, repite el de mañana como respaldo
+                        // Respaldamos 'Hoy' con el siguiente dato en la lista si existe, sino clonamos.
                         hoy = cleanArr.length > 1 ? { val: cleanArr[1].val, date: cleanArr[1].date } : { val: cleanArr[0].val, date: cleanArr[0].date };
                     } else {
-                        // Si el más nuevo es hoy o un día anterior, va directamente a "Hoy"
                         hoy = { val: cleanArr[0].val, date: cleanArr[0].date };
                     }
                     return { hoy, manana };
@@ -430,7 +597,6 @@
                 const bcvData = getRates(cleanBcv);
                 const eurData = getRates(cleanEur);
 
-                // Asignar al estado global
                 appState.hoy.bcv = bcvData.hoy.val;
                 appState.hoy.dateBcv = bcvData.hoy.date;
                 appState.hoy.eur = eurData.hoy.val;
@@ -469,7 +635,11 @@
             }
         }
 
-        window.onload = fetchRates;
+        // Inicializar
+        window.onload = () => {
+            renderTasks();
+            fetchRates();
+        };
     </script>
 </body>
 </html>
