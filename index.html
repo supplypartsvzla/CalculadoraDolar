@@ -195,10 +195,10 @@
 
                 <!-- Input Nueva Tarea con Selector de Prioridad -->
                 <div class="flex gap-2 mb-4">
-                    <select id="taskPriority" class="bg-slate-50 border border-slate-200 rounded-xl px-2 py-2 outline-none focus:border-blue-500 cursor-pointer text-base" title="Prioridad">
-                        <option value="yellow" title="Normal">🟡</option>
-                        <option value="orange" title="Importante">🟠</option>
-                        <option value="red" title="Urgente">🔴</option>
+                    <select id="taskPriority" class="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 outline-none focus:border-blue-500 cursor-pointer text-sm font-medium text-slate-700 transition-colors" title="Prioridad">
+                        <option value="yellow">🟡 Normal</option>
+                        <option value="orange">🟠 Importante</option>
+                        <option value="red">🔴 Urgente</option>
                     </select>
                     <input type="text" id="taskInput" placeholder="Añadir nota..." class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all text-slate-800" onkeypress="if(event.key === 'Enter') addTask()">
                     <button onclick="addTask()" class="bg-slate-900 hover:bg-slate-800 text-white rounded-xl px-3 font-bold transition-colors">
