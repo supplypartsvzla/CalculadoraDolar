@@ -135,15 +135,8 @@
 
         <!-- ==========================================
              3. CUERPO PRINCIPAL (Conversor, Notas, Historial)
-             Orden: 
-             - Móvil: 1. Conversor, 2. Notas, 3. Historial
-             - PC: Izquierda (Conversor + Historial), Derecha (Notas)
              ========================================== -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            
-            <!-- CONTENEDOR IZQUIERDO (Conversor e Historial) -->
-            <!-- En móvil es order-1 (conversor) y order-3 (historial via CSS o separándolo). 
-                 Para lograr el orden exacto en HTML, los colocamos como items de la grilla -->
             
             <!-- 3.1 Conversor Cruzado -->
             <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 md:p-8 lg:col-span-2 order-1">
@@ -183,7 +176,6 @@
             </div>
 
             <!-- 3.2 Bloc de Notas (Recordatorios) -->
-            <!-- order-2 en móvil, se va a la columna derecha en desktop ocupando todo el alto -->
             <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 flex flex-col h-[500px] lg:h-auto lg:row-span-2 lg:col-span-1 order-2">
                 <div class="mb-4">
                     <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
@@ -213,7 +205,6 @@
             </div>
 
             <!-- 3.3 Tabla de Historial API -->
-            <!-- order-3 en móvil, se queda en la columna izquierda abajo del conversor en desktop -->
             <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 md:p-8 lg:col-span-2 order-3">
                 <div class="mb-6 flex justify-between items-end">
                     <div>
@@ -236,7 +227,6 @@
                             </tr>
                         </thead>
                         <tbody id="historyTableBody" class="divide-y divide-slate-100">
-                            <!-- El historial se inyectará aquí -->
                             <tr><td colspan="4" class="px-4 py-8 text-center text-slate-400">Cargando historial...</td></tr>
                         </tbody>
                     </table>
@@ -246,7 +236,7 @@
         </div>
 
         <p class="text-center text-xs text-slate-400 mt-8 pb-4">
-            Datos proporcionados por <a href="https://ve.dolarapi.com" target="_blank" class="hover:text-blue-500 underline">DolarApi</a> y <a href="https://pydolarvenezuela-api.vercel.app/" target="_blank" class="hover:text-blue-500 underline">PyDolarVenezuela</a>.<br>Desarrollado por Lorenzo Sanchez.
+            Datos proporcionados por <a href="https://ve.dolarapi.com" target="_blank" class="hover:text-blue-500 underline">DolarApi</a> y <a href="https://pydolarvenezuela-api.vercel.app/" target="_blank" class="hover:text-blue-500 underline">PyDolarVenezuela</a>.<br>Desarrollado por Solutronic.
         </p>
     </div>
 
@@ -275,7 +265,6 @@
         const formatDate = (dateString, isParalelo = false) => {
             if (dateString === 'N/D') return 'Tasa no anunciada aún';
             if (!dateString) return 'Actualizando...';
-            // Solo extraemos la fecha limpia en modo texto YYYY-MM-DD
             const pureDate = dateString.split('T')[0];
             const [y, m, d] = pureDate.split('-');
             const prefix = isParalelo ? 'Último reporte: ' : 'Fecha Valor: ';
@@ -283,36 +272,30 @@
         };
 
         /* --- MOTOR DE FECHAS (HOY VS MAÑANA) --- */
-        // Extrae el string YYYY-MM-DD de una fecha UTC
         const extractDateString = (isoString) => {
             if (!isoString) return "";
             return isoString.split('T')[0];
         };
 
-        // Algoritmo robusto para limpiar, ordenar y definir el modo "Día Siguiente"
         const cleanAndSortDates = (historyArray) => {
-            // 1. Obtener la fecha local actual en Venezuela (YYYY-MM-DD)
             const formatter = new Intl.DateTimeFormat('en-US', { timeZone: 'America/Caracas', year: 'numeric', month: '2-digit', day: '2-digit' });
             const parts = formatter.formatToParts(new Date());
             const p = {};
             parts.forEach(part => p[part.type] = part.value);
             const todayStr = `${p.year}-${p.month}-${p.day}`;
 
-            // 2. Limpiar la data: eliminar promedios inválidos y mapear las fechas correctamente
             let validData = historyArray.filter(item => item && item.promedio > 0 && (item.fechaActualizacion || item.fecha)).map(item => ({
                 val: item.promedio,
                 fullDate: item.fechaActualizacion || item.fecha,
                 dateStr: extractDateString(item.fechaActualizacion || item.fecha)
             }));
 
-            // 3. Ordenar cronológicamente (del más nuevo al más viejo) ignorando las horas
             validData.sort((a, b) => {
                 if (a.dateStr > b.dateStr) return -1;
                 if (a.dateStr < b.dateStr) return 1;
                 return 0;
             });
 
-            // 4. Determinar Hoy y Mañana cruzando con el calendario real
             let manana = { val: 0, date: '' };
             let hoy = { val: 0, date: '' };
             let foundManana = false;
@@ -329,7 +312,6 @@
                 if (foundManana && foundHoy) break;
             }
 
-            // Si por alguna razón de la API falla el día de hoy, clonamos la última tasa conocida
             if (!foundHoy && validData.length > 0) {
                 hoy = { val: validData[0].val, date: validData[0].fullDate };
             }
@@ -357,15 +339,16 @@
             const isManana = mode === 'manana';
             const mananaAvail = appState.manana.available;
 
-            // Actualizar tasas activas para el conversor
+            // FIX IMPORTANTE AQUÍ: Redondeamos las variables internas a 2 decimales exactamente
+            // para que los cálculos matemáticos coincidan con lo que ve el usuario en pantalla.
             if (isManana && !mananaAvail) {
                 rates.bcv = 0;
                 rates.eur = 0;
             } else {
-                rates.bcv = currentData.bcv;
-                rates.eur = currentData.eur;
+                rates.bcv = parseFloat(currentData.bcv.toFixed(2));
+                rates.eur = parseFloat(currentData.eur.toFixed(2));
             }
-            rates.paralelo = appState.paralelo.val;
+            rates.paralelo = parseFloat(appState.paralelo.val.toFixed(2));
 
             // Renderizar Tarjetas
             if (isManana && !mananaAvail) {
@@ -384,7 +367,6 @@
             const extraParaleloNote = isManana ? " (Tasa de Hoy)" : "";
             document.getElementById('date-paralelo').innerText = formatDate(appState.paralelo.date, true) + extraParaleloNote;
 
-            // Insignia verde de mañana
             const badge = document.getElementById('badge-manana');
             if (appState.manana.available) {
                 badge.classList.remove('hidden');
@@ -476,7 +458,6 @@
                 return;
             }
 
-            // Mostrar los últimos 30 días
             const rows = appState.historyData.slice(0, 30);
             
             rows.forEach(row => {
@@ -503,7 +484,6 @@
             icon.classList.add('animate-spin');
             statusText.innerHTML = '<span class="w-2 h-2 rounded-full bg-yellow-500 animate-pulse" id="statusDot"></span> Conectando...';
 
-            // Limpiar UI visualmente
             document.getElementById('pct-eur').classList.add('hidden');
             document.getElementById('pct-paralelo').classList.add('hidden');
             ['bcv', 'eur', 'paralelo'].forEach(id => {
@@ -512,7 +492,6 @@
             });
 
             try {
-                // Consultas Paralelas a DolarApi y PyDolarVenezuela
                 const reqParalelo = fetch('https://ve.dolarapi.com/v1/dolares/paralelo').then(r => r.json()).catch(() => null);
                 const reqHistBcv = fetch('https://ve.dolarapi.com/v1/historicos/dolares').then(r => r.json()).catch(() => []);
                 const reqHistEur = fetch('https://ve.dolarapi.com/v1/historicos/euros').then(r => r.json()).catch(() => []);
@@ -522,16 +501,13 @@
                     reqParalelo, reqHistBcv, reqHistEur, reqPyDolar
                 ]);
 
-                // 1. Tasa Paralela
                 if (paraleloRes) {
                     appState.paralelo = { val: paraleloRes.promedio, date: paraleloRes.fechaActualizacion || paraleloRes.fecha };
                 }
 
-                // 2. Unificar Históricos (DolarApi)
                 let arrBcv = Array.isArray(histBcv) ? histBcv.filter(i => i.fuente === 'oficial') : [];
                 let arrEur = Array.isArray(histEur) ? histEur.filter(i => i.fuente === 'oficial' || (i.nombre && i.nombre.toLowerCase().includes('oficial'))) : [];
 
-                // 3. Inyectar datos en vivo de PyDolarVenezuela para mayor precisión
                 if (pyDolarRes) {
                     const monitors = pyDolarRes.monitors || pyDolarRes;
                     const usdObj = monitors.usd || monitors.dolar || monitors.USD || {};
@@ -552,7 +528,6 @@
                     if (eurPrice > 0) arrEur.push({ promedio: eurPrice, fechaActualizacion: isoDate, fuente: 'oficial' });
                 }
 
-                // 4. Extraer "Hoy" y "Mañana" inteligentemente
                 const extBcv = cleanAndSortDates(arrBcv);
                 const extEur = cleanAndSortDates(arrEur);
 
@@ -571,10 +546,8 @@
                     appState.manana.dateEur = extEur.manana.date;
                 }
 
-                // 5. Construir Tabla Histórica agrupando por fecha (YYYY-MM-DD)
                 const historyMap = {};
                 
-                // Función para añadir datos al mapa
                 const addToMap = (arr, key) => {
                     arr.forEach(item => {
                         const dStr = extractDateString(item.fechaActualizacion || item.fecha);
@@ -589,13 +562,11 @@
                 addToMap(arrBcv, 'bcv');
                 addToMap(arrEur, 'eur');
                 
-                // Añadimos también el histórico del paralelo si lo tenemos (DolarApi)
                 const reqHistParalelo = await fetch('https://ve.dolarapi.com/v1/historicos/dolares').then(r=>r.json()).catch(()=>[]);
                 if (Array.isArray(reqHistParalelo)) {
                      addToMap(reqHistParalelo.filter(i => i.fuente !== 'oficial'), 'paralelo');
                 }
 
-                // Convertir mapa a array, formatear fecha local y ordenar
                 appState.historyData = Object.values(historyMap)
                     .filter(r => r.bcv > 0)
                     .sort((a, b) => a.dateStr < b.dateStr ? 1 : -1)
@@ -606,7 +577,6 @@
 
                 renderHistoryTable();
 
-                // 6. Finalizar UI
                 ['bcv', 'eur', 'paralelo'].forEach(id => {
                     document.getElementById(`val-${id}`).classList.remove('skeleton', 'text-transparent', 'rounded-md');
                 });
@@ -643,7 +613,6 @@
                 const checked = task.completed ? 'checked' : '';
                 const textStyle = task.completed ? 'line-through text-slate-400' : 'text-slate-700 font-medium';
                 
-                // Color por prioridad
                 const priority = task.priority || 'yellow';
                 let borderColors = 'border-slate-200';
                 let leftBorder = '';
@@ -699,7 +668,6 @@
             renderTasks();
         }
 
-        // Ejecutar apenas cargue la página
         window.onload = () => {
             renderTasks();
             fetchRates();
