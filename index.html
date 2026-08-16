@@ -17,12 +17,12 @@
         .custom-scroll::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 20px; }
     </style>
 </head>
-<body class="text-slate-800 min-h-screen flex flex-col items-center p-4 md:p-8">
+<body class="text-slate-800 min-h-screen flex flex-col items-center p-4 md:p-8 relative">
 
     <div class="max-w-6xl w-full space-y-6">
         
         <!-- ==========================================
-             1. ENCABEZADO Y SELECTOR HOY/MAÑANA
+             1. ENCABEZADO Y SELECTOR HOY/MAÑANA/OTRA FECHA
              ========================================== -->
         <div class="bg-gradient-to-r from-slate-900 to-slate-800 rounded-3xl p-6 md:p-10 shadow-xl text-white flex flex-col md:flex-row justify-between items-center gap-6 relative overflow-hidden">
             <div class="absolute -right-20 -top-20 w-64 h-64 bg-white/5 rounded-full blur-3xl pointer-events-none"></div>
@@ -48,7 +48,7 @@
         </div>
 
         <div class="flex justify-center w-full my-4">
-            <div class="bg-white border border-slate-200 p-1.5 rounded-2xl flex space-x-1 shadow-sm w-full max-w-md relative">
+            <div class="bg-white border border-slate-200 p-1.5 rounded-2xl flex space-x-1 shadow-sm w-full max-w-lg relative">
                 <button id="btn-hoy" onclick="setMode('hoy')" class="flex-1 px-4 py-2.5 text-sm font-bold rounded-xl transition-all bg-slate-900 text-white shadow-sm">
                     Tasa de Hoy
                 </button>
@@ -58,6 +58,10 @@
                         <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                         <span class="relative inline-flex rounded-full h-3.5 w-3.5 bg-emerald-500 border-2 border-white"></span>
                     </span>
+                </button>
+                <button id="btn-otra-fecha" onclick="toggleHistoricalModal()" class="flex-1 px-4 py-2.5 text-sm font-bold rounded-xl transition-all text-slate-500 hover:text-slate-800 hover:bg-slate-50 flex items-center justify-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                    Otra Fecha
                 </button>
             </div>
         </div>
@@ -94,7 +98,6 @@
                         <h2 class="text-lg font-bold text-slate-800">Euro (EUR)</h2>
                     </div>
                     <div class="p-2 bg-indigo-50 rounded-lg">
-                        <!-- Ícono real del Euro -->
                         <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 8h-2.5C9.015 8 7 10.015 7 12s2.015 4 4.5 4H14M7 10h5M7 14h5"></path>
                         </svg>
@@ -210,7 +213,7 @@
                     <div>
                         <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
                             <svg class="w-5 h-5 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
-                            Historial (Últimos 30 días)
+                            Historial Oficial
                         </h2>
                         <p class="text-sm text-slate-500">Registro oficial extraído automáticamente de la API.</p>
                     </div>
@@ -238,6 +241,70 @@
         <p class="text-center text-xs text-slate-400 mt-8 pb-4">
             Datos proporcionados por <a href="https://ve.dolarapi.com" target="_blank" class="hover:text-blue-500 underline">DolarApi</a> y <a href="https://pydolarvenezuela-api.vercel.app/" target="_blank" class="hover:text-blue-500 underline">PyDolarVenezuela</a>.<br>Desarrollado por Solutronic.
         </p>
+    </div>
+
+    <!-- ==========================================
+         MODAL OTRA FECHA (CALCULADORA HISTÓRICA)
+         ========================================== -->
+    <div id="historicalModal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4 transition-opacity opacity-0 duration-300" onclick="if(event.target === this) toggleHistoricalModal()">
+        <div class="bg-white rounded-3xl shadow-2xl border border-slate-200 w-full max-w-md overflow-hidden transform scale-95 transition-transform duration-300" id="historicalModalContent">
+            
+            <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+                <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                    Calculadora Histórica
+                </h3>
+                <button onclick="toggleHistoricalModal()" class="text-slate-400 hover:text-red-500 bg-white hover:bg-red-50 rounded-full p-1.5 transition-colors border border-slate-200 shadow-sm">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            
+            <div class="p-6 space-y-5">
+                <p class="text-xs text-slate-500 leading-relaxed">Calcula las equivalencias en divisas en base a tasas pasadas. <span class="font-bold text-slate-700">Límite: Últimos 90 días.</span></p>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Fecha (Atrás)</label>
+                        <input type="date" id="histDate" class="w-full text-sm font-bold bg-white border border-slate-300 rounded-xl px-3 py-3 outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/20 transition-all text-slate-800 cursor-pointer" onchange="calcHist()">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Monto a Consultar</label>
+                        <div class="relative">
+                            <span class="absolute left-3 top-3 text-slate-400 font-bold text-sm">Bs.</span>
+                            <input type="number" id="histAmount" value="100" class="w-full text-sm font-bold bg-white border border-slate-300 rounded-xl pl-9 pr-3 py-3 outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/20 transition-all text-slate-800" oninput="calcHist()">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="p-3 bg-red-50 rounded-xl border border-red-100 hidden" id="histError">
+                    <p class="text-xs text-red-600 font-bold text-center flex items-center justify-center gap-1">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        No hay registros para esta fecha específica.
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-3 gap-3 pt-2" id="histResults">
+                    <!-- BCV -->
+                    <div class="bg-blue-50 border border-blue-100 rounded-xl p-3 text-center flex flex-col justify-center">
+                        <div class="text-[10px] text-blue-600 font-bold mb-1 uppercase tracking-wider">BCV (USD)</div>
+                        <div class="text-sm font-black text-blue-900" id="h-val-bcv">--</div>
+                        <div class="text-[10px] text-blue-500 mt-1 font-medium" id="h-rate-bcv">Tasa: --</div>
+                    </div>
+                    <!-- EUR -->
+                    <div class="bg-indigo-50 border border-indigo-100 rounded-xl p-3 text-center flex flex-col justify-center">
+                        <div class="text-[10px] text-indigo-600 font-bold mb-1 uppercase tracking-wider">BCV (EUR)</div>
+                        <div class="text-sm font-black text-indigo-900" id="h-val-eur">--</div>
+                        <div class="text-[10px] text-indigo-500 mt-1 font-medium" id="h-rate-eur">Tasa: --</div>
+                    </div>
+                    <!-- PARALELO -->
+                    <div class="bg-emerald-50 border border-emerald-100 rounded-xl p-3 text-center flex flex-col justify-center">
+                        <div class="text-[10px] text-emerald-600 font-bold mb-1 uppercase tracking-wider">Paralelo</div>
+                        <div class="text-sm font-black text-emerald-900" id="h-val-paralelo">--</div>
+                        <div class="text-[10px] text-emerald-500 mt-1 font-medium" id="h-rate-paralelo">Tasa: --</div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- ==========================================
@@ -325,10 +392,10 @@
             
             if (newMode === 'hoy') {
                 document.getElementById('btn-hoy').className = "flex-1 px-4 py-2.5 text-sm font-bold rounded-xl transition-all bg-slate-900 text-white shadow-sm";
-                document.getElementById('btn-manana').className = "flex-1 px-4 py-2.5 text-sm font-bold rounded-xl transition-all text-slate-500 hover:text-slate-800 relative";
+                document.getElementById('btn-manana').className = "flex-1 px-4 py-2.5 text-sm font-bold rounded-xl transition-all text-slate-500 hover:text-slate-800 relative hover:bg-slate-50";
             } else {
                 document.getElementById('btn-manana').className = "flex-1 px-4 py-2.5 text-sm font-bold rounded-xl transition-all bg-slate-900 text-white shadow-sm relative";
-                document.getElementById('btn-hoy').className = "flex-1 px-4 py-2.5 text-sm font-bold rounded-xl transition-all text-slate-500 hover:text-slate-800";
+                document.getElementById('btn-hoy').className = "flex-1 px-4 py-2.5 text-sm font-bold rounded-xl transition-all text-slate-500 hover:text-slate-800 hover:bg-slate-50";
             }
             renderUI();
         }
@@ -339,8 +406,6 @@
             const isManana = mode === 'manana';
             const mananaAvail = appState.manana.available;
 
-            // FIX IMPORTANTE AQUÍ: Redondeamos las variables internas a 2 decimales exactamente
-            // para que los cálculos matemáticos coincidan con lo que ve el usuario en pantalla.
             if (isManana && !mananaAvail) {
                 rates.bcv = 0;
                 rates.eur = 0;
@@ -448,6 +513,104 @@
             });
         }
 
+        /* --- MODAL "OTRA FECHA" (CALCULADORA HISTORICA 90 DIAS) --- */
+        function toggleHistoricalModal() {
+            const modal = document.getElementById('historicalModal');
+            const content = document.getElementById('historicalModalContent');
+            
+            if (modal.classList.contains('hidden')) {
+                // Abrir
+                modal.classList.remove('hidden');
+                
+                // Configurar límites de fecha: Hoy hasta 90 días atrás
+                const today = new Date();
+                const past90 = new Date();
+                past90.setDate(today.getDate() - 90);
+                
+                const dateInput = document.getElementById('histDate');
+                dateInput.max = today.toISOString().split('T')[0];
+                dateInput.min = past90.toISOString().split('T')[0];
+                
+                // Establecer día de hoy por defecto al abrir
+                if(!dateInput.value) dateInput.value = today.toISOString().split('T')[0];
+
+                // Animar entrada
+                setTimeout(() => {
+                    modal.classList.remove('opacity-0');
+                    content.classList.remove('scale-95');
+                }, 10);
+                
+                calcHist(); // Calcular inmediatamente al abrir
+            } else {
+                // Cerrar animado
+                modal.classList.add('opacity-0');
+                content.classList.add('scale-95');
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                }, 300);
+            }
+        }
+
+        function calcHist() {
+            const dateVal = document.getElementById('histDate').value;
+            const amount = parseFloat(document.getElementById('histAmount').value) || 0;
+            const errorDiv = document.getElementById('histError');
+            const resultsDiv = document.getElementById('histResults');
+
+            if (!dateVal || appState.historyData.length === 0) return;
+
+            // Buscar la fecha igual o más cercana hacia atrás (Ej: Para fin de semana, toma la del viernes)
+            let rateData = null;
+            for (let row of appState.historyData) {
+                if (row.dateStr <= dateVal) {
+                    // Validar que el salto de fecha no sea exagerado (más de 6 días significa falta de data en la API)
+                    const reqDate = new Date(dateVal);
+                    const foundDate = new Date(row.dateStr);
+                    const diffDays = Math.abs(reqDate - foundDate) / (1000 * 60 * 60 * 24);
+                    
+                    if (diffDays <= 6) {
+                        rateData = row;
+                    }
+                    break;
+                }
+            }
+
+            const resetFields = () => {
+                ['bcv','eur','paralelo'].forEach(k => {
+                    document.getElementById(`h-val-${k}`).innerText = '--';
+                    document.getElementById(`h-rate-${k}`).innerText = 'Tasa: --';
+                });
+            };
+
+            if (!rateData) {
+                // No se encontró data histórica para esa fecha (fuera del rango de la API)
+                errorDiv.classList.remove('hidden');
+                resultsDiv.classList.add('opacity-40', 'pointer-events-none');
+                resetFields();
+            } else {
+                // Hay data válida
+                errorDiv.classList.add('hidden');
+                resultsDiv.classList.remove('opacity-40', 'pointer-events-none');
+                
+                const safeDiv = (num, den) => (den && den > 0) ? num / den : 0;
+                const fmtRate = (val) => new Intl.NumberFormat('es-VE', { style: 'decimal', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(val);
+
+                // Cálculos e Inserción
+                const valBcv = safeDiv(amount, rateData.bcv);
+                document.getElementById('h-val-bcv').innerText = rateData.bcv > 0 ? `$ ${fmtRate(valBcv)}` : '--';
+                document.getElementById('h-rate-bcv').innerText = rateData.bcv > 0 ? `Tasa: ${fmtRate(rateData.bcv)}` : 'Tasa: --';
+
+                const valEur = safeDiv(amount, rateData.eur);
+                document.getElementById('h-val-eur').innerText = rateData.eur > 0 ? `€ ${fmtRate(valEur)}` : '--';
+                document.getElementById('h-rate-eur').innerText = rateData.eur > 0 ? `Tasa: ${fmtRate(rateData.eur)}` : 'Tasa: --';
+
+                const valParalelo = safeDiv(amount, rateData.paralelo);
+                document.getElementById('h-val-paralelo').innerText = rateData.paralelo > 0 ? `$ ${fmtRate(valParalelo)}` : '--';
+                document.getElementById('h-rate-paralelo').innerText = rateData.paralelo > 0 ? `Tasa: ${fmtRate(rateData.paralelo)}` : 'Tasa: --';
+            }
+        }
+
+
         /* --- HISTORIAL (TABLA) --- */
         function renderHistoryTable() {
             const tbody = document.getElementById('historyTableBody');
@@ -458,6 +621,7 @@
                 return;
             }
 
+            // Mostramos en la tabla oficial sólo los últimos 30 por comodidad
             const rows = appState.historyData.slice(0, 30);
             
             rows.forEach(row => {
@@ -576,6 +740,11 @@
                     });
 
                 renderHistoryTable();
+
+                // Si el modal de histórico está abierto, recalcular con la data fresca
+                if (!document.getElementById('historicalModal').classList.contains('hidden')) {
+                    calcHist();
+                }
 
                 ['bcv', 'eur', 'paralelo'].forEach(id => {
                     document.getElementById(`val-${id}`).classList.remove('skeleton', 'text-transparent', 'rounded-md');
