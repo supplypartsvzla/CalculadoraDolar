@@ -11,7 +11,7 @@
         @keyframes loading { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
         .rate-card { transition: transform 0.2s, box-shadow 0.2s; }
         .rate-card:hover { transform: translateY(-4px); box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1); }
-        /* Scroll personalizado para notas e historial */
+        /* Scroll personalizado */
         .custom-scroll::-webkit-scrollbar { width: 6px; }
         .custom-scroll::-webkit-scrollbar-track { background: transparent; }
         .custom-scroll::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 20px; }
@@ -22,7 +22,7 @@
     <div class="max-w-6xl w-full space-y-6">
         
         <!-- ==========================================
-             1. ENCABEZADO Y SELECTOR HOY/MAÑANA/OTRA FECHA
+             1. ENCABEZADO Y SELECTORES
              ========================================== -->
         <div class="bg-gradient-to-r from-slate-900 to-slate-800 rounded-3xl p-6 md:p-10 shadow-xl text-white flex flex-col md:flex-row justify-between items-center gap-6 relative overflow-hidden">
             <div class="absolute -right-20 -top-20 w-64 h-64 bg-white/5 rounded-full blur-3xl pointer-events-none"></div>
@@ -48,18 +48,18 @@
         </div>
 
         <div class="flex justify-center w-full my-4">
-            <div class="bg-white border border-slate-200 p-1.5 rounded-2xl flex space-x-1 shadow-sm w-full max-w-lg relative">
-                <button id="btn-hoy" onclick="setMode('hoy')" class="flex-1 px-4 py-2.5 text-sm font-bold rounded-xl transition-all bg-slate-900 text-white shadow-sm">
+            <div class="bg-white border border-slate-200 p-1.5 rounded-2xl flex space-x-1 shadow-sm w-full max-w-lg relative overflow-x-auto custom-scroll">
+                <button id="btn-hoy" onclick="setMode('hoy')" class="flex-1 px-4 py-2.5 text-sm font-bold rounded-xl transition-all bg-slate-900 text-white shadow-sm whitespace-nowrap">
                     Tasa de Hoy
                 </button>
-                <button id="btn-manana" onclick="setMode('manana')" class="flex-1 px-4 py-2.5 text-sm font-bold rounded-xl transition-all text-slate-500 hover:text-slate-800 relative">
+                <button id="btn-manana" onclick="setMode('manana')" class="flex-1 px-4 py-2.5 text-sm font-bold rounded-xl transition-all text-slate-500 hover:text-slate-800 relative whitespace-nowrap">
                     Día Siguiente
                     <span id="badge-manana" class="absolute -top-1 -right-1 flex h-3.5 w-3.5 hidden" title="¡Tasa de mañana ya publicada!">
                         <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                         <span class="relative inline-flex rounded-full h-3.5 w-3.5 bg-emerald-500 border-2 border-white"></span>
                     </span>
                 </button>
-                <button id="btn-otra-fecha" onclick="toggleHistoricalModal()" class="flex-1 px-4 py-2.5 text-sm font-bold rounded-xl transition-all text-slate-500 hover:text-slate-800 hover:bg-slate-50 flex items-center justify-center gap-2">
+                <button id="btn-otra-fecha" onclick="toggleHistoricalModal()" class="flex-1 px-4 py-2.5 text-sm font-bold rounded-xl transition-all text-slate-500 hover:text-slate-800 hover:bg-slate-50 flex items-center justify-center gap-2 whitespace-nowrap">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                     Otra Fecha
                 </button>
@@ -98,9 +98,7 @@
                         <h2 class="text-lg font-bold text-slate-800">Euro (EUR)</h2>
                     </div>
                     <div class="p-2 bg-indigo-50 rounded-lg">
-                        <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 8h-2.5C9.015 8 7 10.015 7 12s2.015 4 4.5 4H14M7 10h5M7 14h5"></path>
-                        </svg>
+                        <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 8h-2.5C9.015 8 7 10.015 7 12s2.015 4 4.5 4H14M7 10h5M7 14h5"></path></svg>
                     </div>
                 </div>
                 <div class="flex items-end gap-2 flex-wrap">
@@ -137,11 +135,11 @@
         </div>
 
         <!-- ==========================================
-             3. CUERPO PRINCIPAL (Conversor, Notas, Historial)
+             3. CUERPO PRINCIPAL
              ========================================== -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             
-            <!-- 3.1 Conversor Cruzado -->
+            <!-- Conversor -->
             <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 md:p-8 lg:col-span-2 order-1">
                 <div class="mb-6">
                     <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
@@ -156,7 +154,6 @@
                         <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Monto que tienes</label>
                         <input type="number" id="calcAmount" value="10" class="w-full text-2xl font-bold bg-white border border-slate-300 rounded-xl px-4 py-3 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all text-slate-800" oninput="runConverter()">
                     </div>
-
                     <div class="w-full md:w-1/2">
                         <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Moneda o Tasa de Origen</label>
                         <div class="relative">
@@ -173,12 +170,10 @@
                     </div>
                 </div>
 
-                <div class="mt-6 grid grid-cols-2 md:grid-cols-3 gap-4" id="resultsContainer">
-                    <!-- Se inyectan aquí vía JS -->
-                </div>
+                <div class="mt-6 grid grid-cols-2 md:grid-cols-3 gap-4" id="resultsContainer"></div>
             </div>
 
-            <!-- 3.2 Bloc de Notas (Recordatorios) -->
+            <!-- Notas -->
             <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 flex flex-col h-[500px] lg:h-auto lg:row-span-2 lg:col-span-1 order-2">
                 <div class="mb-4">
                     <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
@@ -188,26 +183,20 @@
                     <p class="text-xs text-slate-500 mt-1">Notas locales independientes.</p>
                 </div>
 
-                <!-- Input Nueva Tarea con Selector de Prioridad -->
                 <div class="flex gap-2 mb-4">
                     <select id="taskPriority" class="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 outline-none focus:border-blue-500 cursor-pointer text-sm font-medium text-slate-700 transition-colors" title="Prioridad">
-                        <option value="yellow">🟡 Normal</option>
-                        <option value="orange">🟠 Importante</option>
-                        <option value="red">🔴 Urgente</option>
+                        <option value="yellow">🟡</option>
+                        <option value="orange">🟠</option>
+                        <option value="red">🔴</option>
                     </select>
                     <input type="text" id="taskInput" placeholder="Añadir nota..." class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all text-slate-800" onkeypress="if(event.key === 'Enter') addTask()">
-                    <button onclick="addTask()" class="bg-slate-900 hover:bg-slate-800 text-white rounded-xl px-3 font-bold transition-colors">
-                        +
-                    </button>
+                    <button onclick="addTask()" class="bg-slate-900 hover:bg-slate-800 text-white rounded-xl px-3 font-bold transition-colors">+</button>
                 </div>
 
-                <!-- Lista Scrollable de Tareas -->
-                <div class="flex-1 overflow-y-auto custom-scroll pr-2 space-y-2 min-h-0" id="taskList">
-                    <!-- Las tareas se renderizan aquí -->
-                </div>
+                <div class="flex-1 overflow-y-auto custom-scroll pr-2 space-y-2 min-h-0" id="taskList"></div>
             </div>
 
-            <!-- 3.3 Tabla de Historial API -->
+            <!-- Historial -->
             <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 md:p-8 lg:col-span-2 order-3">
                 <div class="mb-6 flex justify-between items-end">
                     <div>
@@ -235,21 +224,18 @@
                     </table>
                 </div>
             </div>
-
         </div>
-
-        <p class="text-center text-xs text-slate-400 mt-8 pb-4">
-            Datos proporcionados por <a href="https://ve.dolarapi.com" target="_blank" class="hover:text-blue-500 underline">DolarApi</a> y <a href="https://pydolarvenezuela-api.vercel.app/" target="_blank" class="hover:text-blue-500 underline">PyDolarVenezuela</a>.<br>Desarrollado por Solutronic.
-        </p>
     </div>
 
     <!-- ==========================================
-         MODAL OTRA FECHA (CALCULADORA HISTÓRICA)
+         MODAL OTRA FECHA (RESPONSIVE BOTTOM SHEET / CENTERED)
          ========================================== -->
-    <div id="historicalModal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4 transition-opacity opacity-0 duration-300" onclick="if(event.target === this) toggleHistoricalModal()">
-        <div class="bg-white rounded-3xl shadow-2xl border border-slate-200 w-full max-w-md overflow-hidden transform scale-95 transition-transform duration-300" id="historicalModalContent">
+    <div id="historicalModal" class="fixed inset-0 z-50 hidden flex items-end sm:items-center justify-center bg-slate-900/60 backdrop-blur-sm sm:p-4 transition-opacity opacity-0 duration-300" onclick="if(event.target === this) toggleHistoricalModal()">
+        
+        <!-- En móvil: mt-auto (se pega abajo), rounded-t-3xl. En PC: centrado, rounded-3xl. Uso de dvh para teclados móviles -->
+        <div class="bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl w-full sm:max-w-md overflow-hidden transform translate-y-full sm:translate-y-8 sm:scale-95 transition-all duration-300 flex flex-col max-h-[90dvh]" id="historicalModalContent">
             
-            <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+            <div class="p-4 sm:p-5 border-b border-slate-100 flex justify-between items-center bg-slate-50 shrink-0">
                 <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
                     <svg class="w-5 h-5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                     Calculadora Histórica
@@ -259,16 +245,18 @@
                 </button>
             </div>
             
-            <div class="p-6 space-y-5">
-                <p class="text-xs text-slate-500 leading-relaxed">Calcula las equivalencias en divisas en base a tasas pasadas. <span class="font-bold text-slate-700">Límite: Últimos 90 días.</span></p>
+            <!-- Contenedor scrollable interno -->
+            <div class="p-4 sm:p-6 space-y-5 overflow-y-auto custom-scroll">
+                <p class="text-xs text-slate-500 leading-relaxed">Calcula equivalencias en base a tasas pasadas. <span class="font-bold text-slate-700">Límite: Últimos 90 días.</span></p>
                 
-                <div class="grid grid-cols-2 gap-4">
+                <!-- Grid que pasa a 1 columna en teléfonos para evitar que los inputs se aplasten -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Fecha (Atrás)</label>
                         <input type="date" id="histDate" class="w-full text-sm font-bold bg-white border border-slate-300 rounded-xl px-3 py-3 outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/20 transition-all text-slate-800 cursor-pointer" onchange="calcHist()">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Monto a Consultar</label>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Monto (Bs.)</label>
                         <div class="relative">
                             <span class="absolute left-3 top-3 text-slate-400 font-bold text-sm">Bs.</span>
                             <input type="number" id="histAmount" value="100" class="w-full text-sm font-bold bg-white border border-slate-300 rounded-xl pl-9 pr-3 py-3 outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/20 transition-all text-slate-800" oninput="calcHist()">
@@ -279,27 +267,24 @@
                 <div class="p-3 bg-red-50 rounded-xl border border-red-100 hidden" id="histError">
                     <p class="text-xs text-red-600 font-bold text-center flex items-center justify-center gap-1">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        No hay registros para esta fecha específica.
+                        No hay registros para esta fecha.
                     </p>
                 </div>
 
-                <div class="grid grid-cols-3 gap-3 pt-2" id="histResults">
-                    <!-- BCV -->
+                <div class="grid grid-cols-3 gap-2 sm:gap-3 pt-2" id="histResults">
                     <div class="bg-blue-50 border border-blue-100 rounded-xl p-3 text-center flex flex-col justify-center">
                         <div class="text-[10px] text-blue-600 font-bold mb-1 uppercase tracking-wider">BCV (USD)</div>
-                        <div class="text-sm font-black text-blue-900" id="h-val-bcv">--</div>
+                        <div class="text-sm font-black text-blue-900 break-words" id="h-val-bcv">--</div>
                         <div class="text-[10px] text-blue-500 mt-1 font-medium" id="h-rate-bcv">Tasa: --</div>
                     </div>
-                    <!-- EUR -->
                     <div class="bg-indigo-50 border border-indigo-100 rounded-xl p-3 text-center flex flex-col justify-center">
                         <div class="text-[10px] text-indigo-600 font-bold mb-1 uppercase tracking-wider">BCV (EUR)</div>
-                        <div class="text-sm font-black text-indigo-900" id="h-val-eur">--</div>
+                        <div class="text-sm font-black text-indigo-900 break-words" id="h-val-eur">--</div>
                         <div class="text-[10px] text-indigo-500 mt-1 font-medium" id="h-rate-eur">Tasa: --</div>
                     </div>
-                    <!-- PARALELO -->
                     <div class="bg-emerald-50 border border-emerald-100 rounded-xl p-3 text-center flex flex-col justify-center">
                         <div class="text-[10px] text-emerald-600 font-bold mb-1 uppercase tracking-wider">Paralelo</div>
-                        <div class="text-sm font-black text-emerald-900" id="h-val-paralelo">--</div>
+                        <div class="text-sm font-black text-emerald-900 break-words" id="h-val-paralelo">--</div>
                         <div class="text-[10px] text-emerald-500 mt-1 font-medium" id="h-rate-paralelo">Tasa: --</div>
                     </div>
                 </div>
@@ -311,7 +296,6 @@
          4. LÓGICA JAVASCRIPT
          ========================================== -->
     <script>
-        /* --- ESTADO GLOBAL Y VARIABLES --- */
         let appState = {
             mode: 'hoy', 
             hoy: { bcv: 0, eur: 0, dateBcv: '', dateEur: '' },
@@ -323,7 +307,6 @@
         let rates = { bcv: 0, eur: 0, paralelo: 0 };
         let tasks = JSON.parse(localStorage.getItem('bcv_tasks')) || [];
 
-        /* --- UTILIDADES DE TEXTO Y FECHA --- */
         const formatMoney = (amount, currency = 'Bs') => {
             if (amount === 0 || isNaN(amount)) return '--';
             return new Intl.NumberFormat('es-VE', { style: 'decimal', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(amount) + ` ${currency}`;
@@ -338,7 +321,6 @@
             return `${prefix}${d}/${m}/${y}`;
         };
 
-        /* --- MOTOR DE FECHAS (HOY VS MAÑANA) --- */
         const extractDateString = (isoString) => {
             if (!isoString) return "";
             return isoString.split('T')[0];
@@ -386,16 +368,15 @@
             return { hoy, manana, hasManana: foundManana };
         };
 
-        /* --- CONTROL DE INTERFAZ Y MODOS --- */
         function setMode(newMode) {
             appState.mode = newMode;
             
             if (newMode === 'hoy') {
-                document.getElementById('btn-hoy').className = "flex-1 px-4 py-2.5 text-sm font-bold rounded-xl transition-all bg-slate-900 text-white shadow-sm";
-                document.getElementById('btn-manana').className = "flex-1 px-4 py-2.5 text-sm font-bold rounded-xl transition-all text-slate-500 hover:text-slate-800 relative hover:bg-slate-50";
+                document.getElementById('btn-hoy').className = "flex-1 px-4 py-2.5 text-sm font-bold rounded-xl transition-all bg-slate-900 text-white shadow-sm whitespace-nowrap";
+                document.getElementById('btn-manana').className = "flex-1 px-4 py-2.5 text-sm font-bold rounded-xl transition-all text-slate-500 hover:text-slate-800 relative whitespace-nowrap";
             } else {
-                document.getElementById('btn-manana').className = "flex-1 px-4 py-2.5 text-sm font-bold rounded-xl transition-all bg-slate-900 text-white shadow-sm relative";
-                document.getElementById('btn-hoy').className = "flex-1 px-4 py-2.5 text-sm font-bold rounded-xl transition-all text-slate-500 hover:text-slate-800 hover:bg-slate-50";
+                document.getElementById('btn-manana').className = "flex-1 px-4 py-2.5 text-sm font-bold rounded-xl transition-all bg-slate-900 text-white shadow-sm relative whitespace-nowrap";
+                document.getElementById('btn-hoy').className = "flex-1 px-4 py-2.5 text-sm font-bold rounded-xl transition-all text-slate-500 hover:text-slate-800 whitespace-nowrap";
             }
             renderUI();
         }
@@ -415,7 +396,6 @@
             }
             rates.paralelo = parseFloat(appState.paralelo.val.toFixed(2));
 
-            // Renderizar Tarjetas
             if (isManana && !mananaAvail) {
                 document.getElementById('val-bcv').innerText = 'N/D';
                 document.getElementById('date-bcv').innerText = formatDate('N/D');
@@ -467,7 +447,6 @@
             }
         }
 
-        /* --- CONVERSOR CRUZADO --- */
         function runConverter() {
             const amount = parseFloat(document.getElementById('calcAmount').value) || 0;
             const source = document.getElementById('calcCurrency').value;
@@ -513,16 +492,14 @@
             });
         }
 
-        /* --- MODAL "OTRA FECHA" (CALCULADORA HISTORICA 90 DIAS) --- */
+        /* --- MODAL OTRA FECHA LOGIC --- */
         function toggleHistoricalModal() {
             const modal = document.getElementById('historicalModal');
             const content = document.getElementById('historicalModalContent');
             
             if (modal.classList.contains('hidden')) {
-                // Abrir
                 modal.classList.remove('hidden');
                 
-                // Configurar límites de fecha: Hoy hasta 90 días atrás
                 const today = new Date();
                 const past90 = new Date();
                 past90.setDate(today.getDate() - 90);
@@ -531,20 +508,19 @@
                 dateInput.max = today.toISOString().split('T')[0];
                 dateInput.min = past90.toISOString().split('T')[0];
                 
-                // Establecer día de hoy por defecto al abrir
                 if(!dateInput.value) dateInput.value = today.toISOString().split('T')[0];
 
-                // Animar entrada
                 setTimeout(() => {
                     modal.classList.remove('opacity-0');
-                    content.classList.remove('scale-95');
+                    // Removemos las clases que lo mantienen escondido/encogido
+                    content.classList.remove('translate-y-full', 'sm:translate-y-8', 'sm:scale-95');
                 }, 10);
                 
-                calcHist(); // Calcular inmediatamente al abrir
+                calcHist(); 
             } else {
-                // Cerrar animado
                 modal.classList.add('opacity-0');
-                content.classList.add('scale-95');
+                // Añadimos las clases para la animación de salida
+                content.classList.add('translate-y-full', 'sm:translate-y-8', 'sm:scale-95');
                 setTimeout(() => {
                     modal.classList.add('hidden');
                 }, 300);
@@ -559,11 +535,9 @@
 
             if (!dateVal || appState.historyData.length === 0) return;
 
-            // Buscar la fecha igual o más cercana hacia atrás (Ej: Para fin de semana, toma la del viernes)
             let rateData = null;
             for (let row of appState.historyData) {
                 if (row.dateStr <= dateVal) {
-                    // Validar que el salto de fecha no sea exagerado (más de 6 días significa falta de data en la API)
                     const reqDate = new Date(dateVal);
                     const foundDate = new Date(row.dateStr);
                     const diffDays = Math.abs(reqDate - foundDate) / (1000 * 60 * 60 * 24);
@@ -583,19 +557,16 @@
             };
 
             if (!rateData) {
-                // No se encontró data histórica para esa fecha (fuera del rango de la API)
                 errorDiv.classList.remove('hidden');
                 resultsDiv.classList.add('opacity-40', 'pointer-events-none');
                 resetFields();
             } else {
-                // Hay data válida
                 errorDiv.classList.add('hidden');
                 resultsDiv.classList.remove('opacity-40', 'pointer-events-none');
                 
                 const safeDiv = (num, den) => (den && den > 0) ? num / den : 0;
                 const fmtRate = (val) => new Intl.NumberFormat('es-VE', { style: 'decimal', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(val);
 
-                // Cálculos e Inserción
                 const valBcv = safeDiv(amount, rateData.bcv);
                 document.getElementById('h-val-bcv').innerText = rateData.bcv > 0 ? `$ ${fmtRate(valBcv)}` : '--';
                 document.getElementById('h-rate-bcv').innerText = rateData.bcv > 0 ? `Tasa: ${fmtRate(rateData.bcv)}` : 'Tasa: --';
@@ -610,8 +581,6 @@
             }
         }
 
-
-        /* --- HISTORIAL (TABLA) --- */
         function renderHistoryTable() {
             const tbody = document.getElementById('historyTableBody');
             tbody.innerHTML = '';
@@ -621,7 +590,6 @@
                 return;
             }
 
-            // Mostramos en la tabla oficial sólo los últimos 30 por comodidad
             const rows = appState.historyData.slice(0, 30);
             
             rows.forEach(row => {
@@ -640,7 +608,6 @@
             });
         }
 
-        /* --- FETCHING & CEREBRO CENTRAL --- */
         async function fetchRates() {
             const icon = document.getElementById('refreshIcon');
             const statusText = document.getElementById('statusText');
@@ -741,7 +708,6 @@
 
                 renderHistoryTable();
 
-                // Si el modal de histórico está abierto, recalcular con la data fresca
                 if (!document.getElementById('historicalModal').classList.contains('hidden')) {
                     calcHist();
                 }
@@ -768,7 +734,6 @@
             }
         }
 
-        /* --- BLOC DE NOTAS (LOCALSTORAGE) --- */
         function renderTasks() {
             const list = document.getElementById('taskList');
             list.innerHTML = '';
