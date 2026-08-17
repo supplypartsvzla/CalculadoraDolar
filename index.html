@@ -152,7 +152,8 @@
                 <div class="flex flex-col md:flex-row gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-100">
                     <div class="w-full md:w-1/2">
                         <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Monto que tienes</label>
-                        <input type="number" id="calcAmount" value="10" class="w-full text-2xl font-bold bg-white border border-slate-300 rounded-xl px-4 py-3 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all text-slate-800" oninput="runConverter()">
+                        <!-- AQUI SE AGREGO step="any" PARA PERMITIR DECIMALES -->
+                        <input type="number" id="calcAmount" value="10" step="any" class="w-full text-2xl font-bold bg-white border border-slate-300 rounded-xl px-4 py-3 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all text-slate-800" oninput="runConverter()">
                     </div>
                     <div class="w-full md:w-1/2">
                         <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Moneda o Tasa de Origen</label>
@@ -232,7 +233,6 @@
          ========================================== -->
     <div id="historicalModal" class="fixed inset-0 z-50 hidden flex items-end sm:items-center justify-center bg-slate-900/60 backdrop-blur-sm sm:p-4 transition-opacity opacity-0 duration-300" onclick="if(event.target === this) toggleHistoricalModal()">
         
-        <!-- En móvil: mt-auto (se pega abajo), rounded-t-3xl. En PC: centrado, rounded-3xl. Uso de dvh para teclados móviles -->
         <div class="bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl w-full sm:max-w-md overflow-hidden transform translate-y-full sm:translate-y-8 sm:scale-95 transition-all duration-300 flex flex-col max-h-[90dvh]" id="historicalModalContent">
             
             <div class="p-4 sm:p-5 border-b border-slate-100 flex justify-between items-center bg-slate-50 shrink-0">
@@ -245,11 +245,9 @@
                 </button>
             </div>
             
-            <!-- Contenedor scrollable interno -->
             <div class="p-4 sm:p-6 space-y-5 overflow-y-auto custom-scroll">
                 <p class="text-xs text-slate-500 leading-relaxed">Calcula equivalencias en base a tasas pasadas. <span class="font-bold text-slate-700">Límite: Últimos 90 días.</span></p>
                 
-                <!-- Grid que pasa a 1 columna en teléfonos para evitar que los inputs se aplasten -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Fecha (Atrás)</label>
@@ -259,7 +257,8 @@
                         <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Monto (Bs.)</label>
                         <div class="relative">
                             <span class="absolute left-3 top-3 text-slate-400 font-bold text-sm">Bs.</span>
-                            <input type="number" id="histAmount" value="100" class="w-full text-sm font-bold bg-white border border-slate-300 rounded-xl pl-9 pr-3 py-3 outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/20 transition-all text-slate-800" oninput="calcHist()">
+                            <!-- AQUI SE AGREGO step="any" PARA PERMITIR DECIMALES -->
+                            <input type="number" id="histAmount" value="100" step="any" class="w-full text-sm font-bold bg-white border border-slate-300 rounded-xl pl-9 pr-3 py-3 outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/20 transition-all text-slate-800" oninput="calcHist()">
                         </div>
                     </div>
                 </div>
@@ -448,7 +447,9 @@
         }
 
         function runConverter() {
-            const amount = parseFloat(document.getElementById('calcAmount').value) || 0;
+            const amountStr = document.getElementById('calcAmount').value;
+            // Aseguramos de reemplazar posibles comas por puntos antes de parsear, para evitar errores en móviles
+            const amount = parseFloat(amountStr.replace(',', '.')) || 0;
             const source = document.getElementById('calcCurrency').value;
 
             let amountInVes = 0;
@@ -492,7 +493,6 @@
             });
         }
 
-        /* --- MODAL OTRA FECHA LOGIC --- */
         function toggleHistoricalModal() {
             const modal = document.getElementById('historicalModal');
             const content = document.getElementById('historicalModalContent');
@@ -512,14 +512,12 @@
 
                 setTimeout(() => {
                     modal.classList.remove('opacity-0');
-                    // Removemos las clases que lo mantienen escondido/encogido
                     content.classList.remove('translate-y-full', 'sm:translate-y-8', 'sm:scale-95');
                 }, 10);
                 
                 calcHist(); 
             } else {
                 modal.classList.add('opacity-0');
-                // Añadimos las clases para la animación de salida
                 content.classList.add('translate-y-full', 'sm:translate-y-8', 'sm:scale-95');
                 setTimeout(() => {
                     modal.classList.add('hidden');
@@ -529,7 +527,10 @@
 
         function calcHist() {
             const dateVal = document.getElementById('histDate').value;
-            const amount = parseFloat(document.getElementById('histAmount').value) || 0;
+            const amountStr = document.getElementById('histAmount').value;
+            // Aseguramos de reemplazar posibles comas por puntos antes de parsear
+            const amount = parseFloat(amountStr.replace(',', '.')) || 0;
+            
             const errorDiv = document.getElementById('histError');
             const resultsDiv = document.getElementById('histResults');
 
