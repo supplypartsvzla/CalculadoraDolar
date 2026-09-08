@@ -152,7 +152,6 @@
                 <div class="flex flex-col md:flex-row gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-100">
                     <div class="w-full md:w-1/2">
                         <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Monto que tienes</label>
-                        <!-- AQUI SE AGREGO step="any" PARA PERMITIR DECIMALES -->
                         <input type="number" id="calcAmount" value="10" step="any" class="w-full text-2xl font-bold bg-white border border-slate-300 rounded-xl px-4 py-3 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all text-slate-800" oninput="runConverter()">
                     </div>
                     <div class="w-full md:w-1/2">
@@ -174,27 +173,55 @@
                 <div class="mt-6 grid grid-cols-2 md:grid-cols-3 gap-4" id="resultsContainer"></div>
             </div>
 
-            <!-- Notas -->
-            <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 flex flex-col h-[500px] lg:h-auto lg:row-span-2 lg:col-span-1 order-2">
-                <div class="mb-4">
-                    <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
-                        <svg class="w-5 h-5 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
-                        Bloc de Recordatorios
+            <!-- Calculadora Compacta con Resultado en Vivo -->
+            <!-- Se agregó 'h-fit', 'self-start', 'lg:sticky' para que no se estire y se vea compacta -->
+            <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-4 md:p-5 flex flex-col h-fit self-start lg:sticky lg:top-6 lg:row-span-2 lg:col-span-1 order-2 w-full">
+                <div class="mb-3">
+                    <h2 class="text-base font-bold text-slate-800 flex items-center gap-2">
+                        <svg class="w-4 h-4 text-teal-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                        Calculadora
                     </h2>
-                    <p class="text-xs text-slate-500 mt-1">Notas locales independientes.</p>
                 </div>
 
-                <div class="flex gap-2 mb-4">
-                    <select id="taskPriority" class="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 outline-none focus:border-blue-500 cursor-pointer text-sm font-medium text-slate-700 transition-colors" title="Prioridad">
-                        <option value="yellow">🟡</option>
-                        <option value="orange">🟠</option>
-                        <option value="red">🔴</option>
-                    </select>
-                    <input type="text" id="taskInput" placeholder="Añadir nota..." class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all text-slate-800" onkeypress="if(event.key === 'Enter') addTask()">
-                    <button onclick="addTask()" class="bg-slate-900 hover:bg-slate-800 text-white rounded-xl px-3 font-bold transition-colors">+</button>
+                <!-- Pantalla -->
+                <div class="bg-slate-50 border border-slate-200 rounded-2xl p-3 mb-3 text-right flex flex-col justify-end h-[70px] shadow-inner w-full overflow-hidden">
+                    <div id="calcHistory" class="text-xs text-slate-400 font-medium h-4 w-full truncate tracking-widest mb-0.5"></div>
+                    <div id="calcDisplay" class="text-2xl font-black text-slate-800 tracking-tight truncate">0</div>
                 </div>
 
-                <div class="flex-1 overflow-y-auto custom-scroll pr-2 space-y-2 min-h-0" id="taskList"></div>
+                <!-- Botones de Conversión Rápidos -->
+                <div class="grid grid-cols-4 gap-1.5 mb-3">
+                    <button onclick="calcConvert('bcv')" class="bg-blue-50 text-blue-700 hover:bg-blue-100 rounded-lg py-1.5 text-[10px] sm:text-[11px] font-bold uppercase tracking-wide transition-colors border border-blue-100" title="Convertir monto a USD BCV">A $BCV</button>
+                    <button onclick="calcConvert('eur')" class="bg-indigo-50 text-indigo-700 hover:bg-indigo-100 rounded-lg py-1.5 text-[10px] sm:text-[11px] font-bold uppercase tracking-wide transition-colors border border-indigo-100" title="Convertir monto a Euro">A Euro</button>
+                    <button onclick="calcConvert('usdt')" class="bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded-lg py-1.5 text-[10px] sm:text-[11px] font-bold uppercase tracking-wide transition-colors border border-emerald-100" title="Convertir monto a USDT (Paralelo)">A $USDT</button>
+                    <button onclick="calcConvert('bs')" class="bg-slate-800 text-white hover:bg-slate-700 rounded-lg py-1.5 text-[10px] sm:text-[11px] font-bold uppercase tracking-wide transition-colors" title="Convertir dólares a Bolívares (BCV)">A Bs</button>
+                </div>
+
+                <!-- Teclado Numérico -->
+                <div class="grid grid-cols-4 gap-1.5 flex-1">
+                    <button onclick="calcClear()" class="col-span-2 bg-red-50 text-red-600 hover:bg-red-100 font-bold rounded-xl py-2 transition-colors text-sm">AC</button>
+                    <button onclick="calcDelete()" class="bg-slate-100 text-slate-600 hover:bg-slate-200 font-bold rounded-xl py-2 transition-colors text-sm">⌫</button>
+                    <button onclick="calcSetOp('/')" class="bg-slate-100 text-slate-600 hover:bg-slate-200 font-bold rounded-xl py-2 transition-colors text-sm">÷</button>
+
+                    <button onclick="calcInput('7')" class="bg-white border border-slate-100 shadow-sm hover:bg-slate-50 text-slate-800 font-bold text-base rounded-xl py-2 transition-colors">7</button>
+                    <button onclick="calcInput('8')" class="bg-white border border-slate-100 shadow-sm hover:bg-slate-50 text-slate-800 font-bold text-base rounded-xl py-2 transition-colors">8</button>
+                    <button onclick="calcInput('9')" class="bg-white border border-slate-100 shadow-sm hover:bg-slate-50 text-slate-800 font-bold text-base rounded-xl py-2 transition-colors">9</button>
+                    <button onclick="calcSetOp('*')" class="bg-slate-100 text-slate-600 hover:bg-slate-200 font-bold rounded-xl py-2 transition-colors text-sm">×</button>
+
+                    <button onclick="calcInput('4')" class="bg-white border border-slate-100 shadow-sm hover:bg-slate-50 text-slate-800 font-bold text-base rounded-xl py-2 transition-colors">4</button>
+                    <button onclick="calcInput('5')" class="bg-white border border-slate-100 shadow-sm hover:bg-slate-50 text-slate-800 font-bold text-base rounded-xl py-2 transition-colors">5</button>
+                    <button onclick="calcInput('6')" class="bg-white border border-slate-100 shadow-sm hover:bg-slate-50 text-slate-800 font-bold text-base rounded-xl py-2 transition-colors">6</button>
+                    <button onclick="calcSetOp('-')" class="bg-slate-100 text-slate-600 hover:bg-slate-200 font-bold rounded-xl py-2 text-base transition-colors">−</button>
+
+                    <button onclick="calcInput('1')" class="bg-white border border-slate-100 shadow-sm hover:bg-slate-50 text-slate-800 font-bold text-base rounded-xl py-2 transition-colors">1</button>
+                    <button onclick="calcInput('2')" class="bg-white border border-slate-100 shadow-sm hover:bg-slate-50 text-slate-800 font-bold text-base rounded-xl py-2 transition-colors">2</button>
+                    <button onclick="calcInput('3')" class="bg-white border border-slate-100 shadow-sm hover:bg-slate-50 text-slate-800 font-bold text-base rounded-xl py-2 transition-colors">3</button>
+                    <button onclick="calcSetOp('+')" class="bg-slate-100 text-slate-600 hover:bg-slate-200 font-bold rounded-xl py-2 text-base transition-colors">+</button>
+
+                    <button onclick="calcInput('0')" class="col-span-2 bg-white border border-slate-100 shadow-sm hover:bg-slate-50 text-slate-800 font-bold text-base rounded-xl py-2 transition-colors">0</button>
+                    <button onclick="calcInput('.')" class="bg-white border border-slate-100 shadow-sm hover:bg-slate-50 text-slate-800 font-bold text-base rounded-xl py-2 transition-colors">.</button>
+                    <button onclick="calcCalculate()" class="bg-teal-500 text-white hover:bg-teal-600 font-bold rounded-xl py-2 text-base transition-colors shadow-sm">=</button>
+                </div>
             </div>
 
             <!-- Historial -->
@@ -257,7 +284,6 @@
                         <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Monto (Bs.)</label>
                         <div class="relative">
                             <span class="absolute left-3 top-3 text-slate-400 font-bold text-sm">Bs.</span>
-                            <!-- AQUI SE AGREGO step="any" PARA PERMITIR DECIMALES -->
                             <input type="number" id="histAmount" value="100" step="any" class="w-full text-sm font-bold bg-white border border-slate-300 rounded-xl pl-9 pr-3 py-3 outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/20 transition-all text-slate-800" oninput="calcHist()">
                         </div>
                     </div>
@@ -304,7 +330,6 @@
         };
 
         let rates = { bcv: 0, eur: 0, paralelo: 0 };
-        let tasks = JSON.parse(localStorage.getItem('bcv_tasks')) || [];
 
         const formatMoney = (amount, currency = 'Bs') => {
             if (amount === 0 || isNaN(amount)) return '--';
@@ -448,7 +473,6 @@
 
         function runConverter() {
             const amountStr = document.getElementById('calcAmount').value;
-            // Aseguramos de reemplazar posibles comas por puntos antes de parsear, para evitar errores en móviles
             const amount = parseFloat(amountStr.replace(',', '.')) || 0;
             const source = document.getElementById('calcCurrency').value;
 
@@ -528,7 +552,6 @@
         function calcHist() {
             const dateVal = document.getElementById('histDate').value;
             const amountStr = document.getElementById('histAmount').value;
-            // Aseguramos de reemplazar posibles comas por puntos antes de parsear
             const amount = parseFloat(amountStr.replace(',', '.')) || 0;
             
             const errorDiv = document.getElementById('histError');
@@ -735,76 +758,152 @@
             }
         }
 
-        function renderTasks() {
-            const list = document.getElementById('taskList');
-            list.innerHTML = '';
-            
-            if (tasks.length === 0) {
-                list.innerHTML = '<p class="text-sm text-slate-400 text-center py-8">Todo al día. No hay pendientes.</p>';
-                return;
+        // ==========================================
+        // FUNCIONES DE LA CALCULADORA EN VIVO
+        // ==========================================
+        let calcEquation = '';
+        let isResultFinal = false;
+
+        function safeEval(expr) {
+            try {
+                if (/[^0-9+\-*/. ]/.test(expr)) return 0;
+                return new Function('return ' + expr)();
+            } catch (e) {
+                return 0;
             }
+        }
 
-            tasks.forEach((task, index) => {
-                const checked = task.completed ? 'checked' : '';
-                const textStyle = task.completed ? 'line-through text-slate-400' : 'text-slate-700 font-medium';
-                
-                const priority = task.priority || 'yellow';
-                let borderColors = 'border-slate-200';
-                let leftBorder = '';
+        function calcUpdate() {
+            // Formatear visualmente para la línea de arriba
+            let displayHistory = calcEquation.replace(/\*/g, '×').replace(/\//g, '÷');
+            document.getElementById('calcHistory').innerText = displayHistory || '';
 
-                if (!task.completed) {
-                    leftBorder = 'border-l-4 ';
-                    if (priority === 'yellow') borderColors = 'border-slate-200 border-l-yellow-400';
-                    if (priority === 'orange') borderColors = 'border-slate-200 border-l-orange-500';
-                    if (priority === 'red') borderColors = 'border-slate-200 border-l-red-500';
-                } else {
-                    borderColors = 'border-slate-200';
+            // Calcular resultado en vivo para la línea de abajo
+            let currentResult = '0';
+            if (calcEquation) {
+                // Remover un posible operador al final para poder evaluar en tiempo real
+                let evalStr = calcEquation.trim();
+                if (/[+\-×÷*/]$/.test(evalStr)) {
+                    evalStr = evalStr.slice(0, -1).trim();
                 }
-
-                const bgStyle = task.completed ? 'bg-slate-50/50 opacity-60' : 'bg-white';
-                
-                list.innerHTML += `
-                    <div class="flex items-center justify-between p-3 ${bgStyle} rounded-xl border ${borderColors} ${leftBorder} group transition-all">
-                        <label class="flex items-center gap-3 cursor-pointer flex-1">
-                            <input type="checkbox" ${checked} onchange="toggleTask(${index})" class="w-5 h-5 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer">
-                            <span class="${textStyle} text-sm select-none break-words flex-1 pr-2">${task.text}</span>
-                        </label>
-                        <button onclick="deleteTask(${index})" title="Eliminar" class="text-slate-300 hover:text-red-500 transition px-2 opacity-0 group-hover:opacity-100 focus:opacity-100">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                        </button>
-                    </div>
-                `;
-            });
-        }
-
-        function addTask() {
-            const input = document.getElementById('taskInput');
-            const prioritySelect = document.getElementById('taskPriority');
-            const text = input.value.trim();
-            const priorityValue = prioritySelect.value;
-
-            if (text !== '') {
-                tasks.unshift({ text: text, completed: false, priority: priorityValue });
-                localStorage.setItem('bcv_tasks', JSON.stringify(tasks));
-                input.value = '';
-                renderTasks();
+                if (evalStr) {
+                    let res = safeEval(evalStr);
+                    // Validar si el resultado es válido y formatearlo
+                    if(!isNaN(res)) {
+                        // Usamos toFixed(10) y luego parseFloat para quitar decimales irrelevantes
+                        currentResult = parseFloat(res.toFixed(10)).toString();
+                    }
+                }
             }
+
+            document.getElementById('calcDisplay').innerText = currentResult;
         }
 
-        function toggleTask(index) {
-            tasks[index].completed = !tasks[index].completed;
-            localStorage.setItem('bcv_tasks', JSON.stringify(tasks));
-            renderTasks();
+        function calcInput(num) {
+            if (isResultFinal) {
+                calcEquation = '';
+                isResultFinal = false;
+            }
+            
+            // Evitar multiples puntos decimales en un mismo número
+            let parts = calcEquation.split(/[+\-*/ ]+/);
+            let lastPart = parts[parts.length - 1];
+            if (num === '.' && lastPart.includes('.')) return;
+
+            // Evitar ceros a la izquierda innecesarios
+            if (calcEquation === '0' && num !== '.') {
+                calcEquation = num;
+            } else {
+                calcEquation += num;
+            }
+
+            // Limitar longitud para evitar desbordes visuales
+            if (calcEquation.length > 30) calcEquation = calcEquation.substring(0, 30);
+            
+            calcUpdate();
         }
 
-        function deleteTask(index) {
-            tasks.splice(index, 1);
-            localStorage.setItem('bcv_tasks', JSON.stringify(tasks));
-            renderTasks();
+        function calcSetOp(op) {
+            if (isResultFinal) {
+                // Si ya había un resultado final, usamos ese número mostrado para seguir operando
+                calcEquation = document.getElementById('calcDisplay').innerText + op;
+                isResultFinal = false;
+            } else {
+                if (!calcEquation) calcEquation = '0';
+                
+                // Si el último caracter es un operador, lo reemplazamos por el nuevo
+                let lastChar = calcEquation.slice(-1);
+                if (/[+\-*/]/.test(lastChar)) {
+                    calcEquation = calcEquation.slice(0, -1) + op;
+                } else {
+                    calcEquation += op;
+                }
+            }
+            calcUpdate();
+        }
+
+        function calcClear() {
+            calcEquation = '';
+            isResultFinal = false;
+            calcUpdate();
+        }
+
+        function calcDelete() {
+            if (isResultFinal) {
+                calcEquation = '';
+                isResultFinal = false;
+            } else if (calcEquation.length > 0) {
+                calcEquation = calcEquation.slice(0, -1);
+            }
+            calcUpdate();
+        }
+
+        function calcCalculate() {
+            if (!calcEquation || isResultFinal) return;
+            
+            let evalStr = calcEquation.trim();
+            if (/[+\-*/]$/.test(evalStr)) {
+                evalStr = evalStr.slice(0, -1).trim();
+            }
+            
+            let res = safeEval(evalStr);
+            let finalVal = parseFloat(res.toFixed(10)).toString();
+            
+            // Colocamos el "=" en la ecuación para indicar que finalizó
+            calcEquation = evalStr + '=';
+            isResultFinal = true;
+            
+            // Forzamos actualización visual final
+            let displayHistory = calcEquation.replace(/\*/g, '×').replace(/\//g, '÷');
+            document.getElementById('calcHistory').innerText = displayHistory;
+            document.getElementById('calcDisplay').innerText = finalVal;
+        }
+
+        function calcConvert(target) {
+            // Tomamos el resultado en vivo que ya se calculó en la línea inferior
+            let current = parseFloat(document.getElementById('calcDisplay').innerText);
+            if (isNaN(current) || current === 0) return;
+
+            let res = 0;
+            switch(target) {
+                case 'bcv': res = rates.bcv > 0 ? current / rates.bcv : 0; break;
+                case 'eur': res = rates.eur > 0 ? current / rates.eur : 0; break;
+                case 'usdt': res = rates.paralelo > 0 ? current / rates.paralelo : 0; break;
+                case 'bs': res = rates.bcv > 0 ? current * rates.bcv : 0; break;
+            }
+
+            let formattedRes = parseFloat(res.toFixed(2)).toString();
+            
+            // Mostramos de donde vino la conversión en el historial
+            calcEquation = `${current} → ${target.toUpperCase()}=`;
+            isResultFinal = true;
+            
+            // Actualizar interfaz manual
+            document.getElementById('calcHistory').innerText = calcEquation;
+            document.getElementById('calcDisplay').innerText = formattedRes;
         }
 
         window.onload = () => {
-            renderTasks();
             fetchRates();
         };
     </script>
