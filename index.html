@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Monitor de Tasas Venezuela</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body { font-family: 'Inter', system-ui, sans-serif; background-color: #f8fafc; }
         .skeleton { background: linear-gradient(90deg, #e2e8f0 25%, #cbd5e1 50%, #e2e8f0 75%); background-size: 200% 100%; animation: loading 1.5s infinite; }
@@ -20,13 +21,13 @@
 <body class="text-slate-800 min-h-screen flex flex-col items-center p-4 md:p-8 relative">
 
     <div class="max-w-6xl w-full space-y-6">
-        
+
         <!-- ==========================================
              1. ENCABEZADO Y SELECTORES
              ========================================== -->
         <div class="bg-gradient-to-r from-slate-900 to-slate-800 rounded-3xl p-6 md:p-10 shadow-xl text-white flex flex-col md:flex-row justify-between items-center gap-6 relative overflow-hidden">
             <div class="absolute -right-20 -top-20 w-64 h-64 bg-white/5 rounded-full blur-3xl pointer-events-none"></div>
-            
+
             <div>
                 <h1 class="text-3xl md:text-4xl font-black tracking-tight mb-2 flex items-center gap-3">
                     <svg class="w-8 h-8 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
@@ -138,7 +139,7 @@
              3. CUERPO PRINCIPAL
              ========================================== -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            
+
             <!-- Conversor -->
             <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 md:p-8 lg:col-span-2 order-1">
                 <div class="mb-6">
@@ -173,63 +174,78 @@
                 <div class="mt-6 grid grid-cols-2 md:grid-cols-3 gap-4" id="resultsContainer"></div>
             </div>
 
-            <!-- Calculadora Compacta con Resultado en Vivo -->
-            <!-- Se agregó 'h-fit', 'self-start', 'lg:sticky' para que no se estire y se vea compacta -->
-            <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-4 md:p-5 flex flex-col h-fit self-start lg:sticky lg:top-6 lg:row-span-2 lg:col-span-1 order-2 w-full">
-                <div class="mb-3">
-                    <h2 class="text-base font-bold text-slate-800 flex items-center gap-2">
-                        <svg class="w-4 h-4 text-teal-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
-                        Calculadora
+            <!-- CONTENEDOR DERECHO: Calculadora + Gráfica -->
+            <div class="flex flex-col gap-6 h-fit self-start lg:sticky lg:top-6 lg:row-span-2 lg:col-span-1 order-2 w-full">
+                
+                <!-- Calculadora Compacta con Resultado en Vivo -->
+                <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-4 md:p-5 flex flex-col w-full">
+                    <div class="mb-3">
+                        <h2 class="text-base font-bold text-slate-800 flex items-center gap-2">
+                            <svg class="w-4 h-4 text-teal-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                            Calculadora
+                        </h2>
+                    </div>
+
+                    <!-- Pantalla -->
+                    <div class="bg-slate-50 border border-slate-200 rounded-2xl p-3 mb-3 text-right flex flex-col justify-end h-[70px] shadow-inner w-full overflow-hidden">
+                        <div id="calcHistory" class="text-xs text-slate-400 font-medium h-4 w-full truncate tracking-widest mb-0.5"></div>
+                        <div id="calcDisplay" class="text-2xl font-black text-slate-800 tracking-tight truncate">0</div>
+                    </div>
+
+                    <!-- Botones de Conversión Rápidos -->
+                    <div class="grid grid-cols-4 gap-1.5 mb-3">
+                        <button onclick="calcConvert('bcv')" class="bg-blue-50 text-blue-700 hover:bg-blue-100 rounded-lg py-1.5 text-[10px] sm:text-[11px] font-bold uppercase tracking-wide transition-colors border border-blue-100" title="Convertir monto a USD BCV">A $BCV</button>
+                        <button onclick="calcConvert('eur')" class="bg-indigo-50 text-indigo-700 hover:bg-indigo-100 rounded-lg py-1.5 text-[10px] sm:text-[11px] font-bold uppercase tracking-wide transition-colors border border-indigo-100" title="Convertir monto a Euro">A Euro</button>
+                        <button onclick="calcConvert('usdt')" class="bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded-lg py-1.5 text-[10px] sm:text-[11px] font-bold uppercase tracking-wide transition-colors border border-emerald-100" title="Convertir monto a USDT (Paralelo)">A $USDT</button>
+                        <button onclick="calcConvert('bs')" class="bg-slate-800 text-white hover:bg-slate-700 rounded-lg py-1.5 text-[10px] sm:text-[11px] font-bold uppercase tracking-wide transition-colors" title="Convertir dólares a Bolívares (BCV)">A Bs</button>
+                    </div>
+
+                    <!-- Teclado Numérico -->
+                    <div class="grid grid-cols-4 gap-1.5 flex-1">
+                        <button onclick="calcClear()" class="col-span-2 bg-red-50 text-red-600 hover:bg-red-100 font-bold rounded-xl py-2 transition-colors text-sm">AC</button>
+                        <button onclick="calcDelete()" class="bg-slate-100 text-slate-600 hover:bg-slate-200 font-bold rounded-xl py-2 transition-colors text-sm">⌫</button>
+                        <button onclick="calcSetOp('/')" class="bg-slate-100 text-slate-600 hover:bg-slate-200 font-bold rounded-xl py-2 transition-colors text-sm">÷</button>
+
+                        <button onclick="calcInput('7')" class="bg-white border border-slate-100 shadow-sm hover:bg-slate-50 text-slate-800 font-bold text-base rounded-xl py-2 transition-colors">7</button>
+                        <button onclick="calcInput('8')" class="bg-white border border-slate-100 shadow-sm hover:bg-slate-50 text-slate-800 font-bold text-base rounded-xl py-2 transition-colors">8</button>
+                        <button onclick="calcInput('9')" class="bg-white border border-slate-100 shadow-sm hover:bg-slate-50 text-slate-800 font-bold text-base rounded-xl py-2 transition-colors">9</button>
+                        <button onclick="calcSetOp('*')" class="bg-slate-100 text-slate-600 hover:bg-slate-200 font-bold rounded-xl py-2 transition-colors text-sm">×</button>
+
+                        <button onclick="calcInput('4')" class="bg-white border border-slate-100 shadow-sm hover:bg-slate-50 text-slate-800 font-bold text-base rounded-xl py-2 transition-colors">4</button>
+                        <button onclick="calcInput('5')" class="bg-white border border-slate-100 shadow-sm hover:bg-slate-50 text-slate-800 font-bold text-base rounded-xl py-2 transition-colors">5</button>
+                        <button onclick="calcInput('6')" class="bg-white border border-slate-100 shadow-sm hover:bg-slate-50 text-slate-800 font-bold text-base rounded-xl py-2 transition-colors">6</button>
+                        <button onclick="calcSetOp('-')" class="bg-slate-100 text-slate-600 hover:bg-slate-200 font-bold rounded-xl py-2 text-base transition-colors">−</button>
+
+                        <button onclick="calcInput('1')" class="bg-white border border-slate-100 shadow-sm hover:bg-slate-50 text-slate-800 font-bold text-base rounded-xl py-2 transition-colors">1</button>
+                        <button onclick="calcInput('2')" class="bg-white border border-slate-100 shadow-sm hover:bg-slate-50 text-slate-800 font-bold text-base rounded-xl py-2 transition-colors">2</button>
+                        <button onclick="calcInput('3')" class="bg-white border border-slate-100 shadow-sm hover:bg-slate-50 text-slate-800 font-bold text-base rounded-xl py-2 transition-colors">3</button>
+                        <button onclick="calcSetOp('+')" class="bg-slate-100 text-slate-600 hover:bg-slate-200 font-bold rounded-xl py-2 text-base transition-colors">+</button>
+
+                        <button onclick="calcInput('0')" class="col-span-2 bg-white border border-slate-100 shadow-sm hover:bg-slate-50 text-slate-800 font-bold text-base rounded-xl py-2 transition-colors">0</button>
+                        <button onclick="calcInput('.')" class="bg-white border border-slate-100 shadow-sm hover:bg-slate-50 text-slate-800 font-bold text-base rounded-xl py-2 transition-colors">.</button>
+                        <button onclick="calcCalculate()" class="bg-teal-500 text-white hover:bg-teal-600 font-bold rounded-xl py-2 text-base transition-colors shadow-sm">=</button>
+                    </div>
+                </div>
+
+                <!-- Gráfica de Tendencia -->
+                <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-4 md:p-5 flex flex-col w-full">
+                    <h2 class="text-base font-bold text-slate-800 flex items-center gap-2 mb-3">
+                        <svg class="w-4 h-4 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"></path></svg>
+                        Tendencia (30 días)
                     </h2>
+                    <div class="w-full relative h-48">
+                        <canvas id="ratesChart"></canvas>
+                    </div>
                 </div>
-
-                <!-- Pantalla -->
-                <div class="bg-slate-50 border border-slate-200 rounded-2xl p-3 mb-3 text-right flex flex-col justify-end h-[70px] shadow-inner w-full overflow-hidden">
-                    <div id="calcHistory" class="text-xs text-slate-400 font-medium h-4 w-full truncate tracking-widest mb-0.5"></div>
-                    <div id="calcDisplay" class="text-2xl font-black text-slate-800 tracking-tight truncate">0</div>
-                </div>
-
-                <!-- Botones de Conversión Rápidos -->
-                <div class="grid grid-cols-4 gap-1.5 mb-3">
-                    <button onclick="calcConvert('bcv')" class="bg-blue-50 text-blue-700 hover:bg-blue-100 rounded-lg py-1.5 text-[10px] sm:text-[11px] font-bold uppercase tracking-wide transition-colors border border-blue-100" title="Convertir monto a USD BCV">A $BCV</button>
-                    <button onclick="calcConvert('eur')" class="bg-indigo-50 text-indigo-700 hover:bg-indigo-100 rounded-lg py-1.5 text-[10px] sm:text-[11px] font-bold uppercase tracking-wide transition-colors border border-indigo-100" title="Convertir monto a Euro">A Euro</button>
-                    <button onclick="calcConvert('usdt')" class="bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded-lg py-1.5 text-[10px] sm:text-[11px] font-bold uppercase tracking-wide transition-colors border border-emerald-100" title="Convertir monto a USDT (Paralelo)">A $USDT</button>
-                    <button onclick="calcConvert('bs')" class="bg-slate-800 text-white hover:bg-slate-700 rounded-lg py-1.5 text-[10px] sm:text-[11px] font-bold uppercase tracking-wide transition-colors" title="Convertir dólares a Bolívares (BCV)">A Bs</button>
-                </div>
-
-                <!-- Teclado Numérico -->
-                <div class="grid grid-cols-4 gap-1.5 flex-1">
-                    <button onclick="calcClear()" class="col-span-2 bg-red-50 text-red-600 hover:bg-red-100 font-bold rounded-xl py-2 transition-colors text-sm">AC</button>
-                    <button onclick="calcDelete()" class="bg-slate-100 text-slate-600 hover:bg-slate-200 font-bold rounded-xl py-2 transition-colors text-sm">⌫</button>
-                    <button onclick="calcSetOp('/')" class="bg-slate-100 text-slate-600 hover:bg-slate-200 font-bold rounded-xl py-2 transition-colors text-sm">÷</button>
-
-                    <button onclick="calcInput('7')" class="bg-white border border-slate-100 shadow-sm hover:bg-slate-50 text-slate-800 font-bold text-base rounded-xl py-2 transition-colors">7</button>
-                    <button onclick="calcInput('8')" class="bg-white border border-slate-100 shadow-sm hover:bg-slate-50 text-slate-800 font-bold text-base rounded-xl py-2 transition-colors">8</button>
-                    <button onclick="calcInput('9')" class="bg-white border border-slate-100 shadow-sm hover:bg-slate-50 text-slate-800 font-bold text-base rounded-xl py-2 transition-colors">9</button>
-                    <button onclick="calcSetOp('*')" class="bg-slate-100 text-slate-600 hover:bg-slate-200 font-bold rounded-xl py-2 transition-colors text-sm">×</button>
-
-                    <button onclick="calcInput('4')" class="bg-white border border-slate-100 shadow-sm hover:bg-slate-50 text-slate-800 font-bold text-base rounded-xl py-2 transition-colors">4</button>
-                    <button onclick="calcInput('5')" class="bg-white border border-slate-100 shadow-sm hover:bg-slate-50 text-slate-800 font-bold text-base rounded-xl py-2 transition-colors">5</button>
-                    <button onclick="calcInput('6')" class="bg-white border border-slate-100 shadow-sm hover:bg-slate-50 text-slate-800 font-bold text-base rounded-xl py-2 transition-colors">6</button>
-                    <button onclick="calcSetOp('-')" class="bg-slate-100 text-slate-600 hover:bg-slate-200 font-bold rounded-xl py-2 text-base transition-colors">−</button>
-
-                    <button onclick="calcInput('1')" class="bg-white border border-slate-100 shadow-sm hover:bg-slate-50 text-slate-800 font-bold text-base rounded-xl py-2 transition-colors">1</button>
-                    <button onclick="calcInput('2')" class="bg-white border border-slate-100 shadow-sm hover:bg-slate-50 text-slate-800 font-bold text-base rounded-xl py-2 transition-colors">2</button>
-                    <button onclick="calcInput('3')" class="bg-white border border-slate-100 shadow-sm hover:bg-slate-50 text-slate-800 font-bold text-base rounded-xl py-2 transition-colors">3</button>
-                    <button onclick="calcSetOp('+')" class="bg-slate-100 text-slate-600 hover:bg-slate-200 font-bold rounded-xl py-2 text-base transition-colors">+</button>
-
-                    <button onclick="calcInput('0')" class="col-span-2 bg-white border border-slate-100 shadow-sm hover:bg-slate-50 text-slate-800 font-bold text-base rounded-xl py-2 transition-colors">0</button>
-                    <button onclick="calcInput('.')" class="bg-white border border-slate-100 shadow-sm hover:bg-slate-50 text-slate-800 font-bold text-base rounded-xl py-2 transition-colors">.</button>
-                    <button onclick="calcCalculate()" class="bg-teal-500 text-white hover:bg-teal-600 font-bold rounded-xl py-2 text-base transition-colors shadow-sm">=</button>
-                </div>
-            </div>
+                
+            </div> <!-- Fin Contenedor Derecho -->
 
             <!-- Historial -->
             <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 md:p-8 lg:col-span-2 order-3">
                 <div class="mb-6 flex justify-between items-end">
                     <div>
                         <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
-                            <svg class="w-5 h-5 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                            <svg class="w-5 h-5 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012-2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
                             Historial Oficial
                         </h2>
                         <p class="text-sm text-slate-500">Registro oficial extraído automáticamente de la API.</p>
@@ -259,9 +275,9 @@
          MODAL OTRA FECHA (RESPONSIVE BOTTOM SHEET / CENTERED)
          ========================================== -->
     <div id="historicalModal" class="fixed inset-0 z-50 hidden flex items-end sm:items-center justify-center bg-slate-900/60 backdrop-blur-sm sm:p-4 transition-opacity opacity-0 duration-300" onclick="if(event.target === this) toggleHistoricalModal()">
-        
+
         <div class="bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl w-full sm:max-w-md overflow-hidden transform translate-y-full sm:translate-y-8 sm:scale-95 transition-all duration-300 flex flex-col max-h-[90dvh]" id="historicalModalContent">
-            
+
             <div class="p-4 sm:p-5 border-b border-slate-100 flex justify-between items-center bg-slate-50 shrink-0">
                 <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
                     <svg class="w-5 h-5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
@@ -271,10 +287,10 @@
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>
             </div>
-            
+
             <div class="p-4 sm:p-6 space-y-5 overflow-y-auto custom-scroll">
                 <p class="text-xs text-slate-500 leading-relaxed">Calcula equivalencias en base a tasas pasadas. <span class="font-bold text-slate-700">Límite: Últimos 90 días.</span></p>
-                
+
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Fecha (Atrás)</label>
@@ -288,7 +304,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="p-3 bg-red-50 rounded-xl border border-red-100 hidden" id="histError">
                     <p class="text-xs text-red-600 font-bold text-center flex items-center justify-center gap-1">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
@@ -330,6 +346,7 @@
         };
 
         let rates = { bcv: 0, eur: 0, paralelo: 0 };
+        let ratesChartInstance = null; 
 
         const formatMoney = (amount, currency = 'Bs') => {
             if (amount === 0 || isNaN(amount)) return '--';
@@ -394,7 +411,7 @@
 
         function setMode(newMode) {
             appState.mode = newMode;
-            
+
             if (newMode === 'hoy') {
                 document.getElementById('btn-hoy').className = "flex-1 px-4 py-2.5 text-sm font-bold rounded-xl transition-all bg-slate-900 text-white shadow-sm whitespace-nowrap";
                 document.getElementById('btn-manana').className = "flex-1 px-4 py-2.5 text-sm font-bold rounded-xl transition-all text-slate-500 hover:text-slate-800 relative whitespace-nowrap";
@@ -517,28 +534,130 @@
             });
         }
 
+        // ==========================================
+        // FUNCIONES DE LA GRÁFICA TENDENCIA
+        // ==========================================
+        function renderTrendChart() {
+            if (!appState.historyData || appState.historyData.length === 0) return;
+
+            // Tomamos los últimos 30 días y los revertimos para que vaya del más antiguo al más reciente
+            const chartData = appState.historyData.slice(0, 30).reverse();
+
+            const labels = chartData.map(item => item.date.substring(0, 5));
+            const dataBcv = chartData.map(item => item.bcv);
+            const dataEur = chartData.map(item => item.eur);
+            const dataParalelo = chartData.map(item => item.paralelo);
+
+            const ctx = document.getElementById('ratesChart').getContext('2d');
+
+            if (ratesChartInstance) {
+                ratesChartInstance.destroy();
+            }
+
+            ratesChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'BCV (USD)',
+                            data: dataBcv,
+                            borderColor: '#4ade80', // Verde claro (green-400)
+                            backgroundColor: '#4ade80',
+                            borderWidth: 2,
+                            tension: 0.3,
+                            pointRadius: 0,
+                            pointHitRadius: 10
+                        },
+                        {
+                            label: 'Euro',
+                            data: dataEur,
+                            borderColor: '#38bdf8', // Azul claro (sky-400)
+                            backgroundColor: '#38bdf8',
+                            borderWidth: 2,
+                            tension: 0.3,
+                            pointRadius: 0,
+                            pointHitRadius: 10
+                        },
+                        {
+                            label: 'Paralelo',
+                            data: dataParalelo,
+                            borderColor: '#f97316', // Naranja (orange-500)
+                            backgroundColor: '#f97316',
+                            borderWidth: 2,
+                            tension: 0.3,
+                            pointRadius: 0,
+                            pointHitRadius: 10
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top',
+                            labels: {
+                                boxWidth: 10,
+                                usePointStyle: true,
+                                font: { size: 11, family: 'Inter' }
+                            }
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            titleFont: { family: 'Inter' },
+                            bodyFont: { family: 'Inter' }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { display: false },
+                            ticks: { 
+                                font: { size: 10, family: 'Inter' },
+                                maxTicksLimit: 6
+                            }
+                        },
+                        y: {
+                            grid: { color: '#f1f5f9' },
+                            ticks: { font: { size: 10, family: 'Inter' } }
+                        }
+                    },
+                    interaction: {
+                        mode: 'nearest',
+                        axis: 'x',
+                        intersect: false
+                    }
+                }
+            });
+        }
+
+        // ==========================================
+        // FUNCIONES DE HISTORIAL Y MODAL
+        // ==========================================
         function toggleHistoricalModal() {
             const modal = document.getElementById('historicalModal');
             const content = document.getElementById('historicalModalContent');
-            
+
             if (modal.classList.contains('hidden')) {
                 modal.classList.remove('hidden');
-                
+
                 const today = new Date();
                 const past90 = new Date();
                 past90.setDate(today.getDate() - 90);
-                
+
                 const dateInput = document.getElementById('histDate');
                 dateInput.max = today.toISOString().split('T')[0];
                 dateInput.min = past90.toISOString().split('T')[0];
-                
+
                 if(!dateInput.value) dateInput.value = today.toISOString().split('T')[0];
 
                 setTimeout(() => {
                     modal.classList.remove('opacity-0');
                     content.classList.remove('translate-y-full', 'sm:translate-y-8', 'sm:scale-95');
                 }, 10);
-                
+
                 calcHist(); 
             } else {
                 modal.classList.add('opacity-0');
@@ -553,7 +672,7 @@
             const dateVal = document.getElementById('histDate').value;
             const amountStr = document.getElementById('histAmount').value;
             const amount = parseFloat(amountStr.replace(',', '.')) || 0;
-            
+
             const errorDiv = document.getElementById('histError');
             const resultsDiv = document.getElementById('histResults');
 
@@ -565,7 +684,7 @@
                     const reqDate = new Date(dateVal);
                     const foundDate = new Date(row.dateStr);
                     const diffDays = Math.abs(reqDate - foundDate) / (1000 * 60 * 60 * 24);
-                    
+
                     if (diffDays <= 6) {
                         rateData = row;
                     }
@@ -587,7 +706,7 @@
             } else {
                 errorDiv.classList.add('hidden');
                 resultsDiv.classList.remove('opacity-40', 'pointer-events-none');
-                
+
                 const safeDiv = (num, den) => (den && den > 0) ? num / den : 0;
                 const fmtRate = (val) => new Intl.NumberFormat('es-VE', { style: 'decimal', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(val);
 
@@ -615,7 +734,7 @@
             }
 
             const rows = appState.historyData.slice(0, 30);
-            
+
             rows.forEach(row => {
                 const bcvStr = row.bcv > 0 ? row.bcv.toFixed(2) : '-';
                 const eurStr = row.eur > 0 ? row.eur.toFixed(2) : '-';
@@ -635,7 +754,7 @@
         async function fetchRates() {
             const icon = document.getElementById('refreshIcon');
             const statusText = document.getElementById('statusText');
-            
+
             icon.classList.add('animate-spin');
             statusText.innerHTML = '<span class="w-2 h-2 rounded-full bg-yellow-500 animate-pulse" id="statusDot"></span> Conectando...';
 
@@ -667,13 +786,13 @@
                     const monitors = pyDolarRes.monitors || pyDolarRes;
                     const usdObj = monitors.usd || monitors.dolar || monitors.USD || {};
                     const eurObj = monitors.eur || monitors.euro || monitors.EUR || {};
-                    
+
                     const usdPrice = usdObj.price || usdObj.value || (typeof usdObj === 'number' ? usdObj : 0);
                     const eurPrice = eurObj.price || eurObj.value || (typeof eurObj === 'number' ? eurObj : 0);
-                    
+
                     let rawDate = (pyDolarRes.datetime && pyDolarRes.datetime.date) || usdObj.last_update || '';
                     let isoDate = new Date().toISOString(); 
-                    
+
                     const dateMatch = rawDate.match(/(\d{1,2})[-/](\d{1,2})[-/](\d{4})/);
                     if (dateMatch) {
                         isoDate = `${dateMatch[3]}-${dateMatch[2].padStart(2, '0')}-${dateMatch[1].padStart(2, '0')}T15:00:00Z`;
@@ -702,7 +821,7 @@
                 }
 
                 const historyMap = {};
-                
+
                 const addToMap = (arr, key) => {
                     arr.forEach(item => {
                         const dStr = extractDateString(item.fechaActualizacion || item.fecha);
@@ -716,7 +835,7 @@
 
                 addToMap(arrBcv, 'bcv');
                 addToMap(arrEur, 'eur');
-                
+
                 const reqHistParalelo = await fetch('https://ve.dolarapi.com/v1/historicos/dolares').then(r=>r.json()).catch(()=>[]);
                 if (Array.isArray(reqHistParalelo)) {
                      addToMap(reqHistParalelo.filter(i => i.fuente !== 'oficial'), 'paralelo');
@@ -731,6 +850,9 @@
                     });
 
                 renderHistoryTable();
+                
+                // RENDERIZAR GRÁFICA
+                renderTrendChart();
 
                 if (!document.getElementById('historicalModal').classList.contains('hidden')) {
                     calcHist();
@@ -748,7 +870,7 @@
             } catch (error) {
                 console.error("Error obteniendo tasas:", error);
                 statusText.innerHTML = '<span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span> Error';
-                
+
                 ['bcv', 'eur', 'paralelo'].forEach(id => {
                     document.getElementById(`val-${id}`).classList.remove('skeleton', 'text-transparent', 'rounded-md');
                     document.getElementById(`val-${id}`).innerText = 'Error';
@@ -774,23 +896,18 @@
         }
 
         function calcUpdate() {
-            // Formatear visualmente para la línea de arriba
             let displayHistory = calcEquation.replace(/\*/g, '×').replace(/\//g, '÷');
             document.getElementById('calcHistory').innerText = displayHistory || '';
 
-            // Calcular resultado en vivo para la línea de abajo
             let currentResult = '0';
             if (calcEquation) {
-                // Remover un posible operador al final para poder evaluar en tiempo real
                 let evalStr = calcEquation.trim();
                 if (/[+\-×÷*/]$/.test(evalStr)) {
                     evalStr = evalStr.slice(0, -1).trim();
                 }
                 if (evalStr) {
                     let res = safeEval(evalStr);
-                    // Validar si el resultado es válido y formatearlo
                     if(!isNaN(res)) {
-                        // Usamos toFixed(10) y luego parseFloat para quitar decimales irrelevantes
                         currentResult = parseFloat(res.toFixed(10)).toString();
                     }
                 }
@@ -804,34 +921,27 @@
                 calcEquation = '';
                 isResultFinal = false;
             }
-            
-            // Evitar multiples puntos decimales en un mismo número
+
             let parts = calcEquation.split(/[+\-*/ ]+/);
             let lastPart = parts[parts.length - 1];
             if (num === '.' && lastPart.includes('.')) return;
 
-            // Evitar ceros a la izquierda innecesarios
             if (calcEquation === '0' && num !== '.') {
                 calcEquation = num;
             } else {
                 calcEquation += num;
             }
 
-            // Limitar longitud para evitar desbordes visuales
             if (calcEquation.length > 30) calcEquation = calcEquation.substring(0, 30);
-            
             calcUpdate();
         }
 
         function calcSetOp(op) {
             if (isResultFinal) {
-                // Si ya había un resultado final, usamos ese número mostrado para seguir operando
                 calcEquation = document.getElementById('calcDisplay').innerText + op;
                 isResultFinal = false;
             } else {
                 if (!calcEquation) calcEquation = '0';
-                
-                // Si el último caracter es un operador, lo reemplazamos por el nuevo
                 let lastChar = calcEquation.slice(-1);
                 if (/[+\-*/]/.test(lastChar)) {
                     calcEquation = calcEquation.slice(0, -1) + op;
@@ -860,27 +970,24 @@
 
         function calcCalculate() {
             if (!calcEquation || isResultFinal) return;
-            
+
             let evalStr = calcEquation.trim();
             if (/[+\-*/]$/.test(evalStr)) {
                 evalStr = evalStr.slice(0, -1).trim();
             }
-            
+
             let res = safeEval(evalStr);
             let finalVal = parseFloat(res.toFixed(10)).toString();
-            
-            // Colocamos el "=" en la ecuación para indicar que finalizó
+
             calcEquation = evalStr + '=';
             isResultFinal = true;
-            
-            // Forzamos actualización visual final
+
             let displayHistory = calcEquation.replace(/\*/g, '×').replace(/\//g, '÷');
             document.getElementById('calcHistory').innerText = displayHistory;
             document.getElementById('calcDisplay').innerText = finalVal;
         }
 
         function calcConvert(target) {
-            // Tomamos el resultado en vivo que ya se calculó en la línea inferior
             let current = parseFloat(document.getElementById('calcDisplay').innerText);
             if (isNaN(current) || current === 0) return;
 
@@ -893,12 +1000,10 @@
             }
 
             let formattedRes = parseFloat(res.toFixed(2)).toString();
-            
-            // Mostramos de donde vino la conversión en el historial
+
             calcEquation = `${current} → ${target.toUpperCase()}=`;
             isResultFinal = true;
-            
-            // Actualizar interfaz manual
+
             document.getElementById('calcHistory').innerText = calcEquation;
             document.getElementById('calcDisplay').innerText = formattedRes;
         }
