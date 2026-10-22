@@ -1008,6 +1008,44 @@
             document.getElementById('calcDisplay').innerText = formattedRes;
         }
 
+        // ==========================================
+        // SOPORTE PARA TECLADO FÍSICO
+        // ==========================================
+        document.addEventListener('keydown', function(event) {
+            // Si el usuario está escribiendo en un input (ej. el conversor), no hacer nada en la calculadora
+            if (event.target.tagName === 'INPUT') {
+                return;
+            }
+
+            const key = event.key;
+
+            // Números del 0 al 9
+            if (/^[0-9]$/.test(key)) {
+                calcInput(key);
+            }
+            // Punto o coma decimal
+            else if (key === '.' || key === ',') {
+                calcInput('.');
+            }
+            // Operadores matemáticos
+            else if (key === '+' || key === '-' || key === '*' || key === '/') {
+                calcSetOp(key);
+            }
+            // Tecla Enter o Igual para calcular
+            else if (key === 'Enter' || key === '=') {
+                event.preventDefault(); // Evita clics accidentales si un botón está enfocado
+                calcCalculate();
+            }
+            // Tecla Retroceso (Backspace) para borrar el último dígito
+            else if (key === 'Backspace') {
+                calcDelete();
+            }
+            // Tecla Escape o Suprimir (Delete) para limpiar todo (AC)
+            else if (key === 'Escape' || key === 'Delete') {
+                calcClear();
+            }
+        });
+
         window.onload = () => {
             fetchRates();
         };
